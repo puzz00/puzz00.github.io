@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks cron jobs on linux</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>cron jobs</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./linux_pe.html">linux priv esc</a></li>
+                <li><a class="active" href="#">cron jobs</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="gallery">
+        <div class="card">
+            <a href="https://diannaosec.blogspot.com/2023/11/hacking-cronos-htb.html"><img src="images/cronos.png" alt="hacking cronos on hack the box"></a>
+            <a href="https://diannaosec.blogspot.com/2023/11/hacking-cronos-htb.html">Hacking CronOS - htb - Linux</a>
+        </div>
+    </section>
+    <section class="main-content">
+        <h2>Introduction</h2>
+        <p>
+            Linux implements task scheduling via a utility called cron. This is used by administrators to automate repetitive tasks such as backing up directories on a specified schedule.
+        </p>
+        <p>
+            Cron can run applications, scripts and other commands. These cron jobs can be configured to run on varying time schedules using the cron utility.
+        </p>
+        <p>
+            There is a file called crontab - this is a configuration file which is used by the cron utility to store and track the established cron jobs. We can access this in various ways. We will see the cronjobs which have been set up as the user we currently have access to the victim machine as.
+        </p>
+        <h2>Enumerating Cron Jobs</h2>
+        <p>
+            As mentioned above, there are different ways we can search for cron jobs. We will be able to see the cron jobs which are set up for the current user which we have access to the compromised machine as using: <code>cat /etc/crontab</code> We can also try: <code>ls -al /etc/cron*</code> We can also check <code>systemctl list-timers -all</code>
+        </p>
+        <p>
+            A problem here is that we will only see the cronjobs which have been set up as the current user, but for privilege escalation purposes we really want to know about cronjobs which have been scheduled to run as the root user!
+        </p>
+        <p>
+            We can utilise the <a class="main-links" href="https://github.com/DominicBreuker/pspy" target="_blank">pspy</a> tool to look for all cronjobs - we can download the correct version based on the compromised machine's architecture and then transfer it to the victim machine. The small versions can be tried if the static versions are too large - they are indicated with an s at the end of their name such as <code>pspy64s</code> They might not work so it is best to try the static versions first. We will need to add executable permissions to the binary using <code>chmod +x pspy64</code> before executing it with <code>./pspy64</code> The htb box called cronos which is linked to at the start of this page shows this tool in operation. We could also use an automated linux enumeration script such as <code>linenum.sh</code> or <code>linpeas.sh</code> as these will also enumerate cronjobs.
+        </p>
+        <p>
+            We can add some arguments to the <code>pspy64</code> command such as the <code>-pf</code> flag which prints commands and file system events along with <code>-i 1000</code> which specifies checks to be made every one second.
+        </p>
+        <p>
+            As well as looking at running processes, we can enumerate the compromised machine to look for unusual scripts or files which might be executed as cronjobs. We will look for tar archives, too, as these might be using a cronjob along with a * which can be exploited to elevate our privileges. We can unzip and unarchive tar.gz files using: <code>tar -zxvf monitor.tar.gz</code>
+        </p>
+        <p>
+            It is worthwhile looking for files which we can write to using <code>find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null</code>
+        </p>
+        <h2>Cron File Overwrites</h2>
+        <p>
+            This is the most simple and probably most found cronjob vulnerability. Essentially, we find a cronjob which runs a file or script which we can write to as the current user as the root user. We then overwrite the file or script with a malicious command or append a malicious command to it. There are various malicious commands we can use such as opening a reverse shell, adding the lower privileged user which we have access to the victim machine as into the sudoer file or making a copy of /bin/bash which has the suid bit set.
+        </p>
+        <p>
+            To open a netcat shell on the localhost which will be running as root, we can use: <code>printf '#! /bin/bash\nnc -e /bin/bash 127.0.0.1 1234' > shell.sh</code>
+        </p>
+        <p>
+            We can try to add a low privileged user to the sudoers group using: <code>echo 'echo "billybob ALL=NOPASSWD:ALL" >> /etc/sudoers' >> /usr/local/bin/file.sh</code> We can try <code>sudo -l</code> after the cronjob has executed the now malicious file.sh and if this works we can try to switch to the root user with <code>sudo su</code>
+        </p>
+        <p>
+            To use the cronjob to make a copy of /bin/bash which has the suid bit set, we can use: <code>echo 'cp /bin/bash /tmp/bash;chmod +s /tmp/bash' >> /usr/local/bin/file.sh</code> After the cronjob has executed the now malicious file.sh script as root, we can try to gain a root shell using: <code>/tmp/bash -p</code>
+        </p>
+        <p>
+            Whatever we are doing to files on the system, it is worthwhile to try to append our commands to the end of them and / or to make a backup copy of the original file so we can clean things up and reinstate the original functionality of the file once we have completed our testing.
+        </p>
+        <h2>Cron Wildcards</h2>
+        <p>
+            It might be that we find the <code>*</code> wildcard character being used in a cronjob. A good example is when somebody has scheduled <code>tar</code> to make backup archives of directories and specified that they want all the files in the source directory to be archived.
+        </p>
+        <p>
+            <code>tar czf /tmp/backups/backup.tar.gz /home/billybob/*</code>
+        </p>
+        <p>
+            The above command will archive all of the files in the <code>/home/billybob</code> directory and zip them using <code>gzip</code> before placing the zipped tar archive file into <code>/tmp/backups</code> The problem is the use of the wildcard character - we can exploit this if we have access to <code>/home/billybob</code> and the tar command is running as a cronjob under root.
+        </p>
+        <p>
+            With <code>tar</code> we can execute commands as well as create and zip archives. A way to do this is to use the <code>--checkpoint=1</code> command. This is a switch for tar and will force it to stop archiving. It will then look for a command to use, which can be specified using <code>--checkpoint-action=exec=sh file.sh</code> In this case, tar will execute the command specified by the <code>--checkpoint-action</code> switch which is to execute a malicious shell script which we have created. The contents of the shell script could do the same as already mentioned above - open a reverse shell, add a low privileged user to the sudoers group or create a version of bash which has the suid bit set.
+        </p>
+        <p>
+            In order to get <code>tar</code> to execute the above commands, we just need to use them as filenames for empty files in the directory which the cronjob is archiving. When <code>tar</code> reads the filenames, it will take them as switches and therefore execute the command specified. We can create these malicious filenames using: <code>touch "/home/billybob/--checkpoint=1"</code> and <code>touch "/home/user/billybob/checkpoint-action=exec=sh file.sh"</code>
+        </p>
+        <h2>Cron Path Hijacking</h2>
+        <p>
+            When we look at the crontab using <code>cat /etc/crontab</code> we will see the PATH variable which cron uses to look for binaries in cronjobs. If we see a cronjob which does not have an absolute path specified, we can have a look for it in the first part of the PATH variable. If it is not there, and we can write to that directory, we can hijack the PATH by creating a malicious shell script in that directory with the same name as the binary being executed by the cronjob. If need be - for example we do not have write permisssions on the first directory - we can check the next directory in the same way.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

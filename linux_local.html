@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks linux local enumeration</title>
+</head>
+<body>
+    <header class="navbar">
+        <h1>PTS | linux enum</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./pts.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./post_exploitation.html">post exploitation</a></li>
+                <li><a class="active" href="#">linux enumeration</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="gallery">
+        <div class="card">
+            <a href="./win_sys_enum/" target="_blank"><img src="images/comp_7.jpg" alt="a lab on enumerating windows system information"></a>
+            <a href="./win_sys_enum/" target="_blank">Enumerating Windows Sys Info (ine) - Lab - Windows</a>
+        </div>
+        <div class="card">
+            <a href="./win_users_and_groups/" target="_blank"><img src="images/comp_8.jpg" alt="a lab on enumerating windows local users and groups"></a>
+            <a href="./win_users_and_groups/" target="_blank">Enumerating Windows Users and Groups (ine) - Lab - Windows</a>
+        </div>
+        <div class="card">
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-alfred-thm.html" target="_blank"><img src="images/alfred.png" alt="a box with security tokens for priv esc"></a>
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-alfred-thm.html" target="_blank">Hacking Alfred - thm - Windows</a>
+        </div>
+    </section>
+    <section class="main-content">
+        <h2>Initial Enumeration</h2>
+        <p>
+            We can have a look for the installed shells using <code>cat /etc/shells</code> and we can gain an interactive session if we do not already have one using <code>/bin/bash -i</code> We can look for exploits which target out of date shells - we will need to know the versions of the shells which are installed on the system.
+        </p>
+        <p>
+            We can try to upgrade our shell using python. We will want to enumerate the python version using <code>python --version</code> If python is installed on the victim machine, we can try using <code>python -c 'import pty;pty.spawn("/bin/bash");'</code> to upgrade our shell.
+        </p>
+        <p>
+            If we cannot find python, we can try using perl. We can check to see if perl is installed on the compromised machine using <code>perl --help</code> and assuming it is we can try to upgrade our shell using <code>perl -e 'exec "/bin/bash";'</code>
+        </p>
+        <p>
+            We can take a look at the environment variables using <code>env</code> and if the PATH variable is missing we can set it using <code>export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin</code> and if the TERM variable is not set we can set it using <code>export TERM=xterm</code> We could also set the shell using <code>export SHELL=bash</code>
+        </p>
+        <p>
+            We can try to find files which the current user has write permissions for using: <code>find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null</code> If we find that <code>/etc/passwd</code> is writeable, we can add a new user entry and give them a uid of 0 and a gid of 0 along with a password hash which we create and therefore control.
+        </p>
+        <p>
+            We can look for a quick priv esc win by checking the current user's sudo configuration with <code>sudo -l</code>
+        </p>
+        <p>
+            It is also worthwhile to check the version of sudo installed as older versions can be vulnerable to exploits: <code>sudo -V</code>
+        </p>
+        <h2>System Information</h2>
+        <p>
+            When we land on a linux machine, we will need to enumerate information relating to the system itself. We will want to know more about:
+        </p>
+        <ul class="overview">
+            <li>Linux System Information</li>
+            <ul>
+                <li>Hostname</li>
+                <li>Distribution and distribution release version</li>
+                <li>Kernel version and architecture</li>
+                <li>CPU information</li>
+                <li>Disk information and mounted drives</li>
+                <li>Installed packages and software</li>
+            </ul>
+        </ul>
+        <p>
+            We can use: <code>hostname</code> to find the name of the compromised host. We can find out more about the host using: <code>uname -a</code> This will also show us the linux kernel version. If we want to focus only on the kernel version, we can use: <code>uname -r</code> We can also look at <code>cat /proc/version</code>
+        </p>
+        <p>
+            We can look for the distribution with: <code>cat /etc/issue</code> We can find more information relating to the distribution using: <code>cat /etc/*release</code> The command: <code>cat /proc/version</code> also shows us information about the kernel and distribution.
+        </p>
+        <p>
+            Once we know the os and version, we need to have a look at the release cycles for it to see if it is out of date or still being maintained. If we are working on a ubuntu machine, we can check <a class="main-links" href="https://ubuntu.com/about/release-cycle" target="_blank">here</a> Wikipedia also has good information regarding os release cycles.
+        </p>
+        <p>
+            We can see the environment variables for the compromised user (including the path environment variable) using: <code>env</code> We might find something sensitive such as a password in the environment variables.
+        </p>
+        <p>
+            We can find out more about the cpu using: <code>lscpu</code> This will show us the architecture of the cpu.
+        </p>
+        <p>
+            We can use: <code>df -h</code> to see the file systems mounted on the compromised machine. We can use: <code>lsblk</code> to look at devices.
+        </p>
+        <p>
+            We need to also look for unmounted file systems as we might be able to mount them and find sensitive data on them. We can look for unmounted file systems using: <code>cat /etc/fstab | grep -v "#" | column -t</code> In order to mount them, we will need to be acting under root privileges.
+        </p>
+        <p>
+            To list the installed packages on the compromised machine, we can use: <code>dpkg -l</code> This will return lots of results. We can make it faster to look through them by using: <code>dpkg -l | more</code>
+        </p>
+        <p>
+            We can create a file which contains all installed packages on the system. This can be useful as we can then use <code>grep</code> to search for specific packages such as <code>apparmor</code> or <code>snort</code>
+        </p>
+        <p>
+            <code>apt list --installed | tr "/" " " | cut -d" " -f1,3 | sed 's/[0-9]://g' | tee -a installed_pkgs.list</code>
+        </p>
+        <p>
+            Once we have a list of installed binaries, we can compare them to <a class="main-links" href="https://gtfobins.github.io">gtfobins</a> to see if any are vulnerable:
+        </p>
+        <p>
+            <code>for i in $(curl -s https://gtfobins.github.io/ | html2text | cut -d" " -f1 | sed '/^[[:space:]]*$/d');do if grep -q "$i" installed_pkgs.list;then echo "Check GTFO for: $i";fi;done</code>
+        </p>
+        <p>
+            We can make a similar list of binaries which have the suid bit set when we are looking for priv esc opportunities. This can be cross referenced with ... as on a regular linux system there may well be lots of binaries returned and we will want to quickly focus in on those which might have priv esc vulns we can use.
+        </p>
+        <p>
+            <code>find / -perm -4000 -type f 2>/dev/null | tr "/" " " | rev | cut -d" " -f1 | sed 's/[0-9]://g' | rev | tee -a suid_bins.txt</code>
+        </p>
+        <h2>Linux Users and Groups</h2>
+        <p>
+            We are looking for:
+            <ul class="overview">
+                <li>Users and Groups</li>
+                <ul>
+                    <li>Current user and their groups</li>
+                    <li>Other users on the system</li>
+                    <li>Groups</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
+            To find out more about the current user, we can use: <code>id</code> and <code>whoami</code> We can check which groups they belong to we can use: <code>groups bob</code> If we see that they are members of the <code>root</code> or <code>sudo</code> groups then we know they have higher privileges. If the user is in the <code>sudo</code> group, we can try <code>sudo -l</code> to see which commands they can run.
+        </p>
+        <p>
+            To find other users on the compromised machine, we can use: <code>cat /etc/passwd</code> This will show us user and service accounts. User accounts will have the specification for which shell they use - this is at the end of the displayed data - for example <code>/bin/bash</code> Service accounts are set up to manage services rather than to allow users to log into the machine, so they do not have shells set up - they will typically have <code>/usr/sbin/nologin</code> listed at the end of their data. An example of this is the <code>www-data</code> user which is set up to manage apache2. Knowing this, we can search for other user accounts which are not services using: <code>cat /etc/passwd | grep -v /nologin</code>
+        </p>
+        <p>
+            If we want to only see the usernames, we can use: <code>cat /etc/passwd | cut -d : -f 1</code>
+        </p>
+        <p>
+            We can also check the /home directory to see if there are any other usernames in there.
+        </p>
+        <p>
+            We can add a new user using: <code>useradd bob -s /bin/bash</code> and we can then add the user to the root group using: <code>usermod -aG root bob</code> though this is not recommended practise. If we want the new user to have a home directory, we need to include the <code>-m</code> flag with the <code>useradd</code> command.
+        </p>
+        <p>
+            We can look for groups using: <code>cat /etc/group</code> If we find interesting groups, we can check which users belong to it using <code>getent group sudo</code>
+        </p>
+        <p>
+            We can check for logged in users using: <code>w</code> or <code>who</code> if those binaries are installed on the compromised system. We can use: <code>last</code> to look for the latest logons.
+        </p>
+        <p>
+            The <code>lastlog</code> command will show us the users and when they last logged in. We can use this to see if a user has used ssh to log onto the system.
+        </p>
+        <p>
+            We can have a look at recently used shell commands using: <code>cat /home/bob/.bash_history</code> or just the <code>history</code> command.
+        </p>
+        <p>
+            When it comes to looking for history files, it is worthwhile looking for special history files which are created by scripts or programs - these might be monitoring the system and activities of its users:
+            <code>find / -type f \( -name *_hist -o -name *_history \) -exec ls -l {} \; 2>/dev/null</code>
+        </p>
+        <h2>Linux Network Information</h2>
+        <p>
+            We are looking for:
+            <ul class="overview">
+                <li>Linux Network Information</li>
+                <ul>
+                    <li>Current IP address and network adaptor</li>
+                    <li>Internal network addresses</li>
+                    <li>TCP / UDP services running and their respective ports</li>
+                    <li>Other hosts on the network</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
+            We can use <code>ifconfig</code> to find the IP address and network adapter information. If this command does not work, we can try <code>ip a</code> or <code>ip a s</code> We could also try looking at <code>cat /etc/networks</code>
+        </p>
+        <p>
+            We can have a look at <code>cat /etc/hosts</code> if we are trying to find internal domains to access as it is configured locally. We can find the dns configuration by looking at <code>cat /etc/resolv.conf</code>
+        </p>
+        <p>
+            We can look for other hosts using <code>arp -a</code> If the arp command is not installed and we have access to a meterpreter session, we can use <code>arp</code> from within the meterpreter session. We can also look for other hosts using <code>ip neigh</code>
+        </p>
+        <p>
+            We can look at routing information using <code>route</code> and <code>ip route</code> The command <code>netstat -r</code> will also show us routing information. If we want to add a new route via a specified gateway, we can use: <code>ip route add 192.168.222.0/24 via 10.52.14.1</code>
+        </p>
+        <p>
+            The <code>netstat -ano</code> command will show us active connections to other hosts which might only be on the internal network. The <code>ss -at</code> command will also do this.
+        </p>
+        <p>
+            The <code>top</code> command will show us running processes dynamically.
+        </p>
+        <p>
+            We can perform a ping sweep of a network using: <code>for i in {1..254} ;do (ping -c 1 172.16.5.$i | grep "bytes from" &) ;done</code> A ping sweep will need to be tried several times and it might not work even then as often icmp traffic is dropped by networks.
+        </p>
+        <h2>Linux Processes, Cron Jobs and Hidden / Temporary Resources</h2>
+        <p>
+            We are looking for:
+            <ul class="overview">
+                <li>
+                    <ul>
+                        <li>Running services and their process ids</li>
+                        <li>Cron jobs</li>
+                        <li>Hidden files</li>
+                        <li>Hidden directories</li>
+                        <li>Contents of temporary directories</li>
+                    </ul>
+                </li>
+            </ul>
+        </p>
+        <p>
+            To find running processes, we can use <code>ps</code> or <code>ps aux</code> if we want more information regarding them.
+        </p>
+        <p>
+            We can use <code>top</code> to look at the running processes - this is a dynamic command.
+        </p>
+        <p>
+            We will want to know more about cron jobs which have been scheduled as they can potentially provide us with privilege escalation opportunities. We can have a look at the cron jobs for the current user using: <code>crontab -l</code> The crontab process executes at boot and manages the scheduled cron jobs.
+        </p>
+        <p>
+            We can use different commands to enumerate the cron table. One way is to use <code>cat /etc/crontab</code> Another is <code>ls -al /etc/cron*</code> and another is <code>systemctl list-timers -all</code>
+        </p>
+        <p>
+            We can look for hidden files using: <code>find / -type f -name ".*" -exec ls -l {} \; 2>/dev/null | grep billybob</code>
+        </p>
+        <p>
+            We can look for hidden directories using: <code>find / -type d -name ".*" -ls 2>/dev/null</code>
+        </p>
+        <p>
+            The directories on linux systems which store data on a temporary basis are worth looking into as there might be interesting log files or other data in them. The <code>/tmp</code> directory stores data for ten days whereas the <code>/var/tmp</code> directory stores it for thirty days. Furthermore, the data in the <code>/tmp</code> directory is deleted at every reboot whereas the data in <code>/var/tmp</code> is not so it is used for data which needs to survive reboots. The <code>/dev/shm</code> directory is also used to store data on a temporary basis.
+        </p>
+        <p>
+            We can look for temporary data using: <code>ls -l /tmp /var/tmp /dev/shm</code>
+        </p>
+        <h2>Password Hunting</h2>
+        <p>
+            The <code>/var</code> directory is a good place to start looking for credentials. This is because it usually contains the web root. Credntials and database credentials are typically found in the web root.
+        </p>
+        <p>
+            A common example of database credentials being found in the web root is mysql creds in wordpress configuration files: <code>cat wp-config.php | grep 'DB_USER\|DB_PASSWORD'</code>
+        </p>
+        <p>
+            The spool or mail directories may also contain credentials.
+        </p>
+        <p>
+            We can look for passwords using various commands. To find files which contain the string <code>password</code> we can use <code>locate password | more</code>
+        </p>
+        <p>
+            We can look for the string <code>password</code> and colour it using: <code>grep --color=auto -rnw '/' -ie "PASSWORD" --color=always 2>/dev/null</code>
+        </p>
+        <p>
+            We can check the current directory and its child directories for the string <code>password</code> using: <code>find . -type f -exec grep -i -I "PASSWORD" {} /dev/null \;</code>
+        </p>
+        <p>
+            We can do the same thing as the above command but also colour the string <code>password</code> using: <code>find . -type f -exec grep --color=auto -ie "PASSWORD" --color=always {} /dev/null \;</code>
+        </p>
+        <p>
+            The strings <code>username</code> and <code>password</code> can give lots of results, so we can try to be more specific first of all with strings such as:
+            <ul class="overview">
+                <li>Enumerating Credentials</li>
+                <ul>
+                    <li>db_password</li>
+                    <li>db_passwd</li>
+                    <li>db_user</li>
+                    <li>db_username</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
+            It is also worth looking for files which end <code>.conf</code> or <code>.config</code> as they might contain usernames, passwords or other sensitive data.
+        </p>
+        <p>
+            <code>find / -type f \( -name *.conf -o -name *.config \) -exec ls -l {} \; 2>/dev/null</code>
+        </p>
+        <p>
+            <code>find / ! -path "*/proc/*" -iname "*config*" -type f 2>/dev/null</code>
+        </p>
+        <p>
+            It is worthwhile looking at .sh files (shell scripts) as well as they can reveal interesting data: <code>find / -type f -name "*.sh" 2>/dev/null | grep -v "src\|snap\|share"</code>
+        </p>
+        <p>
+            We can also check .xml files, .bak files and even .txt files.
+        </p>
+        <p>
+            If we do find passwords, it is worth trying them with all the user accounts which we have discovered as password reuse is common.
+        </p>
+        <p>
+            If we want to try to find the public ssh keys of users who have access to the compromised machine, we can use: <code>find / -name authorized_keys 2>/dev/null</code>
+        </p>
+        <p>
+            We can look for private ssh keys on the compromised machine using: <code>find / -name id_rsa 2>/dev/null</code> If we find a private ssh key, we can try to gain access to other machines on the network or even the compromised machine itself using ssh along with the looted private key. We will need to copy the private key to our attacking machine first of all and change its permissions using <code>chmod 600 id_rsa</code> as ssh will not accept a private key which has lax permissions.
+        </p>
+        <p>
+            It might be that users are using their ssh keys to ssh into machines which are on other subnets which they can access - it makes sense therefore to try any discovered private keys from the compromised machine on any hosts which we have found on other subnets or in the arp cache. We can check the <code>known_hosts</code> file to look for target machines when we find ssh keys on a system.
+        </p>
+        <h2>Automating Linux Enumeration</h2>
+        <p>
+            We can use meterpreter post exploitation modules to automate some enumeration of a linux machine. We can use <code>run post/linux/gather/enum_configs</code> to find info in common configuration files. We can use run <code>post/linux/gather/enum_network</code> to find out more about the networks. The command <code>run post/linux/gather/enum_system</code> gives us lots of information about the system, users and processes along with cronjobs. We can use run <code>post/linux/gather/checkvm</code> to check if the victim machine is a virtual machine. 
+        </p>
+        <p>
+            We can use LinEnum's shell script. We need to transfer it to the victim machine first. We can run it using <code>./linenum.sh</code> We can save the output with a name for the report using <code>./linenum.sh -r report -e /tmp/</code> We can add the <code>-t</code> switch to use thorough tests which are slower than the default ones. 
+        </p>
+        <p>
+            We can also use linpeas.sh after we have transfered it to the victim machine. We can run it using <code>./lp.sh</code>
+        </p>
+        <p>
+            We need to make sure we can execute the above shell scripts - to do this we can use <code>chmod +x linenum.sh</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://diannaosec.blogspot.com" class="active" target="_blank">diannaosec</a>
+        </div>
+    </section>
+</body>
+</html>

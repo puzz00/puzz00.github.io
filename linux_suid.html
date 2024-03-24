@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks suid binaries on linux</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>suid</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./linux_pe.html">linux priv esc</a></li>
+                <li><a class="active" href="#">suid binaries</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Introduction - File Permissions</h2>
+        <p>
+            File permissions let us control who can read, write and execute files. There are three levels of permission - the owner (u), group (g) and others (o).
+        </p>
+        <p>
+            We can use numbers to specify permissions.
+        </p>
+        <p>
+            Read access is 4 - read contents of files or list directories. Write access is 2 - modify files or create and delete files in directories. Execute permission is 1 - run a file or change into a directory.
+        </p>
+        <p>
+            We can use the chmod command to change file permissions using letters or numbers. We can use + to add and - to remove.
+        </p>
+        <p>
+            When using numbers, the first digit is for the owner, the second digit is for the group and the third digit is for others. We add together the numbers for the permissions we want to grant. 7 means read, write and execute rights as 4 + 2 + 1 = 7
+        </p>
+        <p>
+            We can change the owner and group of a file using the chown command. We need to specify the owner:group
+        </p>
+        <h2>SUID and GUID</h2>
+        <p>
+            Some binaries need to operate with elevated privileges. An example of this is sudo - this binary lets users run certain or all commands with elevated privileges. The sudo binary is owned by root and has the suid bit set. The suid bit lets other users execute the binary as the owner of the binary. In the case of sudo the binary is executed but it checks the user password before it executes the specified command as root.
+        </p>
+        <p>
+            We can only set the suid bit on binaries - not shell scripts or python files etc. This is because an .sh file actually needs to use bash to execute it so bash is the binary. A python file uses python to execute it so python is the binary.
+        </p>
+        <p>
+            We can set the suid bit using: sudo chmod u+s filename or we can use the octal way: sudo chmod 4000 filename.
+        </p>
+        <h2>Enumerating suid binaries</h2>
+        <p>
+            When we land on a box, we can search for binaries which have the suid bit set using <code>find / -perm 4000 -type f 2>/dev/null</code>
+        </p>
+        <p>
+            We can see if the suid bit is set on a binary by using <code>ls -l</code> If the suid bit is set, the execute bit space for the owner will have <code>s</code> - this will be lowercase if the execute bit is set as well as the suid bit - it will be <code>S</code> if the suid bit is set but the execute bit is not set.
+        </p>
+        <p>
+            We can check <a class="main-links" href="https://gtfobins.github.io" target="_blank">gtfobins</a> for ways to exploit binaries which have the suid bit set. We could create a file which contains suid binaries using <code>find / -perm -4000 -type f 2>/dev/null | tr "/" " " | rev | cut -d" " -f1 | sed 's/[0-9]://g' | rev | tee -a suid_bins.txt</code>
+        </p>
+        <p>
+            This can be cross-referenced with entries on gtfobins using <code>for i in $(curl -s https://gtfobins.github.io/ | html2text | cut -d" " -f1 | sed '/^[[:space:]]*$/d');do if grep -q "$i" installed_pkgs.list;then echo "Check GTFO for: $i";fi;done</code>
+        </p>
+        <p>
+            Sometimes, we might find custom binaries with the suid bit set. If we find these, it is worth our while to explore them to find out how they work and any potential ways to exploit their functionality to elevate our privileges or access resources we should not be able to access.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

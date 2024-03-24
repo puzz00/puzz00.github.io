@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks sudo shell escapes</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>shell escapes</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./linux_pe.html">linux priv esc</a></li>
+                <li><a class="active" href="#">shell escapes</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Introduction</h2>
+        <p>
+            On a linux system, there are different types of user. There is a root user who has the highest privileges and therefore complete control of the system. This user is given the user id of 0. There are regular users who do not have the same privs as the root user, but they can be given elevated privs on a temporary basis using the <code>sudo</code> command
+        </p>
+        <p>
+            The <code>sudo</code> command stands for super user do and lets a user execute a command with elevated privileges on a temporary basis. It usually requires authentication with the user's own password. 
+        </p>
+        <p>
+            We can allow a user to use sudo by adding them to the <code>/etc/sudoers</code> file. We do not edit this with text editors directly because if we mess it up it could lead to big problems. We therefore use <code>visudo</code> to edit it. This will check for syntax errors before saving the changes. 
+        </p>
+        <p>
+            To add sudo privileges for specific users or groups to <code>/etc/sudoers</code> we can use a command such as <code>mmouse ALL=(ALL:ALL) ALL</code> This command relates to the user mmouse. We can use a <code>%</code> prefix to specify a group like so <code>%mmouse ALL=(ALL:ALL) ALL</code>
+        </p>
+        <p>
+            The <code>sudo</code> group can use sudo - this group is sometimes called <code>wheel</code> This illustrates how we can use group memberships to more finely control privileges. We could add mmouse to the suod group like so <code>usermod -aG sudo mmouse</code>
+        </p>
+        <p>
+            If we have full sudo rights, we can open an elevated shell session using <code>sudo -s</code> or <code>sudo /bin/bash</code> We can kill a sudo session using <code>sudo -k</code> A sudo session will time out after fifteen minutes by default.
+        </p>
+        <p>
+            We can switch into different users without needing to specify their password using <code>sudo -u dduck /bin/bash</code> or <code>sudo -u dduck -s</code> We do not just have to start a bash session as the user - we can specify any command to run as them.
+        </p>
+        <h3>/etc/sudoers</h3>
+        <p>
+            We can break down the entry <code>mmouse ALL=(ALL:ALL) ALL</code>
+        </p>
+        <p>
+            The first field specifies the user which the rule should be applied to.
+        </p>
+        <p>
+            The second field specifies the hostname that the rule applies to - usually this is specified as all for all hosts.
+        </p>
+        <p>
+            The third field specifies the users mmouse can <code>sudo</code> into.
+        </p>
+        <p>
+            The fourth field specifies the groups the user can <code>sudo</code> into.
+        </p>
+        <p>
+            The fifth field specifies the command or commands which can be executed using <code>sudo</code>
+        </p>
+        <p>
+            We could add <code>NOPASSWD</code> to the entry which means that the user will not need to enter their password when they want to elevate their privileges to do whatever has been specified in the rest of the entry. We could do this using <code>mmouse ALL(ALL:ALL) NOPASSWD: ALL</code>
+        </p>
+        <p>
+            If we omit the <code>(ALL:ALL)</code> user and group specification then the user will only be able to <code>sudo</code> into the root user.
+        </p>
+        <p>
+            We can specify specific commands in the entry like so <code>dduck ALL=(ALL:ALL) NOPASSWD: /usr/bin/find</code>
+        </p>
+        <h2>Finding sudo shell escapes</h2>
+        <p>
+            One of the first things we can do when we land on a linux box is to run <code>sudo -l</code> which will list any commands which the current user can run as the root user via the <code>sudo</code> command.
+        </p>
+        <h2>Exploiting sudo shell escapes</h2>
+        <p>
+            If we see that the current user can run commands as the root user using <code>sudo</code> then it makes sense for us to check if there is a way to abuse this to escape the shell and open a root shell. A good resource for this is <a class="main-links" href="https://gtfobins.github.io" target="_blank">gtfobins</a> which has lots of information regarding shell escapes for different binaries.
+        </p>
+        <p>
+            It may well be that we find a custom shell script or binary which can be executed as the root user via the <code>sudo</code> command. If this is the case, it is a good idea to have a look at the script or binary in order to understand how it works as it might be we can exploit it to gain a root shell. We could also check file permissions and the path as we might be able to hijack the path or replace or edit the script.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

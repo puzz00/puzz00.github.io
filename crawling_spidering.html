@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>crawling and spidering websites</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>crawling and spidering</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">crawling and spidering</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Crawling</h2>
+        <p>
+            Crawling a website means we manually move around a website via a proxy such as burpsuite so we can create a map of the site. We submit data to forms and click on all the links which we can find. We are trying to understand how the website or app is laid out and how it works - its functionality. This is considered a passive method as we are only navigating what is publicly availabe.
+        </p>
+        <p>
+            We can do this manually without a proxy server, but doing it through a proxy is much better as it keeps track of everything we access and it builds a user friendly sitemap which will help us better understand the website or app.
+        </p>
+        <p>
+            When we use burpsuite, it is best to add the target domains and or IP addresses to our scope and only log items which are in scope. We need to switch off the intercept tool before we begin clicking on the links and submitting data.
+        </p>
+        <h2>Spidering</h2>
+        <p>
+            This is when we use an automated tool to navigate the website. It is considered an active method as the spider will attempt to find and access resources which are not publicly available as well as those which are. The spider follows links recursively and is quite noisy. Spidering will tend to find more resources than crawling.
+        </p>
+        <p>
+            We can use OWASP Zap to spider a target site. We can change the mode - it is best to use the safe or standard modes. We can navigate to the target site and then we can go to the spider tool inside the tools dropdown menu. We can then select the website or app which we want to spider. We will want to enable the recurse option. The advance options let us configure the depth of the spidering and the speed we want the spider to work.
+        </p>
+        <p>
+            Once the spidering has started, we will see links. Those marked red are links to external sites whilst those in green are within the context of the target site. Once the scan has finished, we can export the results as a csv file. We can right click on resources which have been found and then open them in a browser.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00 class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

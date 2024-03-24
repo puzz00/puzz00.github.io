@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>file and directory enumeration</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>files and directories</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">file and directory enumeration</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Intro</h2>
+        <p>
+            Hidden files and directories can yield useful information. There are different tools which allow us to find these resources. Whichever one we choose to use, it is important that we specify a good wordlist. We can try more than one wordlist, and we can scan for hidden directories and files inside new directories which are discovered. The common.txt wordlist which can be found @ <code>/usr/share/wordlists/dirb/common.txt</code> is a good one for general directory busting, but SecLists has more thorough ones. For web app testing, we can try using wordlists found @  <code>/opt/SecLists/Discovery/Web-Content</code> A good one is the <code>directory-list-lowercase-2.3-medium.txt</code> This can be used if we have ascertained that lower or upper case characters are not important so we can use the lowercase wordlist to save time.
+        </p>
+        <h2>Gobuster</h2>
+        <p>
+            Gobuster is fast as it is written in the go language. We can use it to find directories, subdomains via DNS enumeration and virtual hosts. A simple directory scan can be launched using <code>sudo gobuster dir -u http://192.168.56.101 -w /usr/share/wordlists/dirb/common.txt</code>
+        </p>
+        <p>
+           We can specify file extensions to look for files of the specified types using the -x flag like so: <code>sudo gobuster dir -u http://192.168.56.101 -w /usr/share/wordlists/dirb/common.txt -x old,bak,sh,php,txt</code> We can get Gobuster to follow 302 redirects using the -r flag: <code>sudo gobuster dir -u http://192.168.56.101 -w /usr/share/wordlists/dirb/common.txt -x old,bak,sh,php,txt,xml -r</code>
+        </p>
+        <p>
+            We can filter out specific return status codes using the -b flag like so: <code>sudo gobuster dir -u http://192.168.56.101 -w /opt/SecLists/Discovery/Web-Content/directory-list-lowercase-2 -b 403,404 -x php,xml -r</code>
+        </p>
+        <p>
+            A good general purpose wordlist to use is <code>/usr/share/dirbuster/wordlists/directory-list-lowercase-2.3-medium.txt</code>
+        </p>
+        <p>
+            We can also enumerate virtual hosts using <code>sudo gobuster vhost -u http://192.168.56.101 -w /usr/share/amass/wordlists/bitquark_subdomains_top100k.txt</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

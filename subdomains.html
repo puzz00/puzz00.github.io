@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>enumerating subdomains</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>subdomains</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">subdomains</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Subdomain Enumeration</h2>
+        <p>
+            We can use passive and active methods to find subdomains for target organisations and domains. The passive methods include using advanced searches which are covered <a class="main-links" href="./dorks.html" target="_blank">here</a>
+        </p>
+        <p>
+            Sublist3r is a tool which lets us use passive techniques (it searches for subdomains via a number of search engines) as well as active bruteforcing via subbrute which is built into it. The basic command is <code>sudo sublist3r -d targetsite.com</code>
+        </p>
+        <p>
+            We can use fierce to bruteforce subdomains. A command we can use is <code>sudo fierce --domain targetsite.com --subdomain-file /opt/Seclists/Discovery/fierce-hostlists.txt</code> This tool gives us ip addresses for the subdomains if it can retrieve them. We can then scan the ip addresses using nmap to look for services.
+        </p>
+        <h2>wfuzz</h2>
+        <p>
+            Another good tool is wfuzz - we can first of all run it to find numbers of words or lines which show up in unwanted results <code>sudo wfuzz -u http://devvortex.htb -H "Host: FUZZ.devvortex.htb" -w /usr/share/wordlists/amass/subdomains-top1mil-5000.txt</code>
+        </p>
+        <p>
+            We can then hide the number of words or lines which show up in unwanted results <code>sudo wfuzz --hl 7 -u http://devvortex.htb -H "Host: FUZZ.devvortex.htb" -w /usr/share/wordlists/amass/subdomains-top1mil-5000.txt</code>
+        </p>
+        <h2>gobuster</h2>
+        <p>
+            Whilst looking at enumerating subdomains, it might be worth noting that we can look for virtual hosts using <code>sudo gobuster vhost -u http://wekor.thm -w /usr/share/amass/wordlists/subdomains-top1mil-20000.txt</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

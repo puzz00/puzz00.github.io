@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web app fingerprinting</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>web app fingerprinting</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">web app fingerprinting</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Web App Technology Fingerprinting</h2>
+        <p>
+            We want to find out as much as we can about the target web apps. We can use tools to fingerprint the technology which is being used on them. This is useful as we can then search for vulnerabilities which potentially affect those technologies which are being used by the target apps.
+        </p>
+        <p>
+            We can use mozilla extensions such as builtwith and wappalyzer. These give us a good overview of the technologies which are being used by the target apps. We can also use a command line tool called whatweb. We can run this tool using: <code>sudo whatweb targetsite.com</code>
+        </p>
+        <h2>WAF Detection</h2>
+        <p>
+            Web Application Firewalls are used by most websites and apps. They protect the IP address of the web server as well as offering other services. Each WAF is slightly different and it is therefore important to identify which WAF is being used by the target website or app.
+        </p>
+        <p>
+            One tool we can use is wafw00f - this can be used like so: <code>sudo wafw00f https://targetsite.com</code> This tool will attempt to identify if a WAF is being used and if so then which WAF it is. We can use the -a flag to run more checks: <code>sudo wafw00f -a https://targetsite.com</code>
+        </p>
+        <p>
+            If there is no WAF being used, it may well be that the IP address which we find for the web server is not being proxied.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

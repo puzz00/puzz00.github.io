@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>source code analysis</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>source code</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">source code analysis</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>HTTrack</h2>
+        <p>
+            It is useful to have a local version of a website so we can analyse the source code thoroughly looking for potential injection vulnerabilities, hidden comments and so on.
+        </p>
+        <p>
+            We can run a wizard for httrack by just entering <code>httrack</code> in the command line. We can then specify a website such as <code>https://targetsite.com</code> and then modify the download using by answering the questions which the wizard asks.
+        </p>
+        <p>
+            We will have a local copy of the website and its various resources once httrack has finished downloading everything. We can then enumerate the website to understand more about its structure. We can also have a look at javascript being used in order to find parameters to test for xss vulnerabilities.
+        </p>
+        <h2>Eyewitness</h2>
+        <p>
+            Eyewitness screenshots websites and / or applications which are running. It provides us with a useful html report. We can use the results to help us know more about the web presence of the target organisation. Eyewitness also lets us download javascript being used by the web apps. It can also identify default credentials if they are known.
+        </p>
+        <p>
+            We need to create a txt file which contains the domains or IP addresses of the sites which we want eyewitness to target. Each domain needs to be on a new line. We can then run eyewitness using <code>eyewitness --web -f domains.txt -d target_site</code> This tool lets us quickly see what is running on the various website and / or apps which we are interested in finding out more about.
+        </p>
+        <p>
+            Note - I have found eyewitness to exit with status code 1 and not work if I try to run it using sudo privileges.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

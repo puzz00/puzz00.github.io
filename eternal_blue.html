@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks exploiting smb with eternalblue</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>eternalblue</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_vulns.html">win vulns</a></li>
+                <li><a class="active" href="#">eternalblue</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="gallery">
+        <div class="card">
+            <a href="https://diannaosec.blogspot.com/2022/07/blue-tryhackme.html" target="_blank"><img src="images/blue.jpg" alt="hacking blue by thm"></a>
+            <a href="https://diannaosec.blogspot.com/2022/07/blue-tryhackme.html" target="_blank">Blue (thm) - Walkthrough - Windows</a>
+        </div>
+    </section>
+    <section class="main-content">
+        <h2>Eternalblue</h2>
+        <p>
+            This is the name given to a collection of vulnerabilities and exploits in Windows which were leaked to the public in 2017 by the Shadow Brokers. A patch was released by Microsoft but not all companies have implemented it, or they are still running older and vulnerable versions of Windows such as Vista, 7, Server 2008, 8.1, Server 2012, a specific build  of 10 or Server 2016.
+        </p>
+        <p>
+            Eternalblue is powerful as it exploits smb and gives us an elevated session.
+        </p>
+        <h2>Enumeration</h2>
+        <p>
+            If we find a vulnerable version of Windows is running, it is worth checking if we can use eternalblue against it by running: <code>sudo nmap -sV -p445 --script=smb-vuln-ms17-010 10.10.10.12</code> The vulnerability exists only in smbv1.
+        </p>
+        <h2>Exploitation</h2>
+        <p>
+            We can use an msfconsole module to exploit eternalblue: <code>use exploit/windows/smb/ms17_010_eternalblue</code> We need to set the RHOSTS option and then we can run it!
+        </p>
+        <p>
+            We can also manually exploit eternalblue by cloning the github repository: <a class="main-links" target="_blank" href="https://github.com/3ndG4me/AutoBlue-MS17-010">AutoBlue</a> Once we have cloned it, we need to install python dependencies using: <code>pip install -r requirements.txt</code> We then generate the shellcode by navigating into the <code>shellcode</code> directory and granting execute privileges to <code>shell_prep.sh</code> before executing it: <code>./shell_prep.sh</code> We can then specify y so we can generate shellcode using msfvenom - we will need to specify the LHOST and LPORT (we can use the same for x86 and x64 architectures) - we can then specify that we want to use a regular cmd shell with a stageless payload. These options can be modified according to the environment we are working in. The shellcodes will be saved as .bin files - we can use the sc_x64.bin or sc_x86.bin shellcode if we do not want to use a meterpreter session. We then start a netcat listener: <code>nc -nlfp 1234</code> and execute the relevant python exploit (this depends on the OS version): <code>python3 eternalblue_exploit7.py 10.10.10.12 shellcode/sc_x64.bin</code>
+        </p>
+        <h2>Conclusion</h2>
+        <p>
+            Eternalblue is powerful and still viable as (surprisingly) some companines have not patched their systems, yet. If we find a (potentially) vulnerable version of Windows running, it is worth our while to check if it is actually vulnerable to eternalblue.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

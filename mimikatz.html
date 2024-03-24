@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks mimikatz</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>mimikatz</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_creds.html">win creds</a></li>
+                <li><a class="active" href="#">mimikatz</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Mimikatz</h2>
+        <p>
+            Mimikatz is a tool which requires admin privileges to work properly. It allows us to dump cleartext passwords, hashes and kerberos tickets from the lsass.exe process memory.
+        </p>
+        <p>
+            the lsass.exe process manages user authentication on windows systems. In order to do this, it needs to interact with the sam database. This means it will keep data from the sam database cached in its memory in ram - mimikatz seeks to exploit this.
+        </p>
+        <p>
+            We can use a meterpreter session to load the kiwi module to use mimikatz <code>load kiwi</code> If we do this, we will not need to upload a mimikatz binary to the victim machine and everything can happen in memory. An alternative is to transfer a copy of the mimikatz binary to a victim machine and then try to execute it.
+        </p>
+        <h2>The Kiwi Extension</h2>
+        <p>
+            If we have a meterpreter session, we can use <code>load kiwi</code> to load an extension which gives us mimikatz. We can then run commands such as <code>lsa_dump_sam</code> This command dumps all the NTLM hashes it finds in the lsass.exe memory cache. It will also give us the syskey which is used to encrypt the sam database file. We can also use <code>creds_all</code> to look for other credentials such as plaintext passwords from wdigest though this will probably not return anything as newer versions of windows do not store any cleartext passwords. We can look for cleartext credentials in the lsa secrets by using <code>lsa_dump_secrets</code>
+        </p>
+        <h2>The Mimikatz Executable</h2>
+        <p>
+            If we are working with kali linux, we can find a copy of the mimikatz executable file @ <code>/usr/share/windows-resources/mimikatz/x64/mimikatz.exe</code>
+        </p>
+        <p>
+            Once we have transfered it to a compromised windows machine, we can run it using <code>.\mimikatz.exe</code> The first command we need to run is <code>privilege::debug</code> If we see <code>'20' OK</code> then we have the necessary privileges to extract hashes from the lsass.exe process memory.
+        </p>
+        <p>
+            We can use <code>lsadump::sam</code> to get hashes and other data from the lsass.exe process memory cache from the sam database. We can try to retrieve the lsa secrets using <code>lsadump::secrets</code>
+        </p>
+        <p>
+            We can try to retrieve cleartext passwords using <code>sekurlsa::logonpasswords</code> We will get a result if the victim system has been configured to store cleartext passwords for successful logins.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>
