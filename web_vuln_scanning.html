@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web server vulnerability scanning</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>vuln scanning</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">web server vuln scanning</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Web Server Scanning with Nikto</h2>
+        <p>
+            We can use a tool called Nikto to speed up (automate) fingerprinting and vulnerability scanning websites and web applications. The tool is user friendly, but if we need detailed help regarding it we can use the command <code>nikto -Help</code>
+        </p>
+        <p>
+            A basic scan can be launched against a target site using <code>sudo nikto -h http://10.10.10.15</code> This scan will return useful information in the terminal window. It is easier to work with the results in an html report - we can get Nikto to generate this for us using <code>sudo nikto -h http://10.10.10.15 -o results.html -Format htm</code>
+        </p>
+        <p>
+            Once we have generated a report using Nikto, we can manually explore each issue which it has identified. Nikto is a great tool to use against a website or web application but it needs to be combined with manual enumeration techniques.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

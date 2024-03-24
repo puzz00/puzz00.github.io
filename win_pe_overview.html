@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks windows privilege escalation overview</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>overview</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_pe.html">win priv esc</a></li>
+                <li><a class="active" href="#">overview</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Post Exploitation</h2>
+        <p>
+            This section explains ways we can elevate our privileges on a Windows system once we have exploited it. This is a part of the post exploitation phase of a test. We need to make sure that what we do is in scope, and that we record every change we make. These changes can then be included in the report so they can be reset if the client wants. The time and date that the changes are made should also be included in the report. If we make permanent changes to a machine, we need to keep a backup of the original data. This goes for logs, too - we need to make a backup copy of them before we delete them.
+            We need to encrypt all data we capture from machines when it is stored locally on our attacking machines. Once the engagement is over, we need to securely wipe the data from our machines. When we give proof to a client of sensitive data we have found, we need to obfuscate it (usernames and passwords etc).
+        </p>
+        <p>
+            We can see the post exploitation stage of a penetration test as been cyclical. This process has stages: local enumeration of the compromised machine; optionally transferring files and upgrading shells; privilege escalation and establishing persistence; data harvesting; scanning internal networks and then the exploitation of new systems including pivoting to new sub-nets. As stated above, this section will focus on the privilege escalation part of the post exploitation phase of the test.
+        </p>
+        <h2>Privilege Escalation</h2>
+        <p>
+            Once we are on a machine, we will want to elevate our privilleges so that we can access more sensitive data. This can be achieved by exploiting vulnerabilities in operating systems or other software via bugs or design flaws. Priv esc can be vertical or horizontal (lateral). With horizontal priv esc, we move from one user to another who has the same level of system access. With vertical, we move from a lower user to a higher user (such as from a domain user to a domain admin on Windows). We can search for ways to escalate privileges and we can use local exploits to escalate privileges.
+        </p>
+        <p>
+            Privilege escalation depends very much on the environment which we find ourselves in when we land on a machine. This is why local enumeration is very important. When we land on a machine, we need to gather information about its system and users. This is the local enumeration part of post exploitation which needs to happen before we try to elevate our privileges.
+        </p>
+        <p>
+            Once we know what type of machine we are working with, we need to quickly try to establish persistence. This is because with some shells they can be closed by the remote user. This can easily happen with meterpreter shells, for example a remote user could close a browser which has established a meterpreter session via a client side exploit.
+        </p>
+        <p>
+            We can start to gain persistence by migrating our process to a different one. With meterpreter, we can use an automated way to do this: <code>run post/windows/manage/migrate</code> We can do this manually by first of all finding the process IDs of processes which are already running on the compromised machine. We can do this by using: <code>ps</code> We can then choose a PID to migrate to (for example 1200) and use: <code>migrate 1200</code> We can find out which process id we are using with this command: <code>getpid</code> Processes such as lsass and explorer are good ones to migrate to as they are stable. We can quickly find the pid using: <code>pgrep explorer</code>
+        </p>
+        <p>
+            Once we have migrated to a different process, we need to think about how we can establish persistence. Most of the ways to do this require higher privileges, however, so we need to look for ways to do priv esc first. This is one reason privilege escalation is so important. It is also important because with higher level privileges we will be able to enumerate the victim machine more and potentially have access to more sensitive data - it is a crucial part of a penetration test.
+        </p>
+        <p>
+            There are many ways we can elevated privileges - this section deals with some of them in more depth.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p>
+            techniques for privilege escalation on a compromised windows system
+        </p>
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

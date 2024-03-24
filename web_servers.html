@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web server fingerprinting</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>web server fingerprinting</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">web server fingerprinting</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Web Server Fingerprinting</h2>
+        <p>
+            We want to find out more about the technologies which are being used by the web server along with which server we are dealing with for example apache2 or iis. We also want to know which version of the web server is being used. We want to try to work out what type of stack is being used. An example would be if wordpress is being used with apache then it stands a good chance that there is a mysql server also as it suggests that a lamp stack is being used. The main points here are which web server software is being used and which version is it.
+        </p>
+        <p>
+            We can use nmap to scan the web server in order to enumerate the technology and version being used. This is an active technique and can be done simply with <code>sudo nmap -Pn -n -sV -F 10.10.10.22</code> The http-enum script is useful when fingerprinting web servers: <code>sudo nmap -Pn -n -sV -p80 --script=http-enum 10.10.10.22</code>
+        </p>
+        <p>
+            Once we have discovered the web server and version which is being used, we can use a tool such as searchsploit to look for vulnerabilities and exploits. We can also use search engines to research the technology being used.
+        </p>
+        <p>
+            We need to scan the entire tcp port range as other services can be running on unexpected ports.
+        </p>
+        <p>
+            We can use msfconsole to fingerpring web servers. We can use <code>auxiliary/scanner/http/http_version</code>
+        </p>
+        <p>
+            We can also find out about the web server using passive techniques such as information leakage in places like default pages or directory listing. Another passive technique is banner grabbing. The server response header lets us know which web server and version is being used. We can find this via a web proxy but it is often disabled.
+        </p>
+        <p>
+            In order to look for directories which might leak information, we can use gobuster to do some directory busting along with a wordlist such as the one @ <code>/usr/share/metasploit-framework/data/wordlists/directory.txt</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

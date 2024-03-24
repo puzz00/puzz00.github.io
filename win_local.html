@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks windows local enumeration</title>
+</head>
+<body>
+    <header class="navbar">
+        <h1>PTS | win enum</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./pts.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./post_exploitation.html">post exploitation</a></li>
+                <li><a href="./win_enum.html">windows enumeration</a></li>
+                <li><a class="active" href="#">local enumeration</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="gallery">
+        <div class="card">
+            <a href="./win_sys_enum/" target="_blank"><img src="images/comp_7.jpg" alt="a lab on enumerating windows system information"></a>
+            <a href="./win_sys_enum/" target="_blank">Enumerating Windows Sys Info (ine) - Lab - Windows</a>
+        </div>
+        <div class="card">
+            <a href="./win_users_and_groups/" target="_blank"><img src="images/comp_8.jpg" alt="a lab on enumerating windows local users and groups"></a>
+            <a href="./win_users_and_groups/" target="_blank">Enumerating Windows Users and Groups (ine) - Lab - Windows</a>
+        </div>
+        <div class="card">
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-alfred-thm.html" target="_blank"><img src="images/alfred.png" alt="a box with security tokens for priv esc"></a>
+            <a href="https://diannaosec.blogspot.com/2023/10/hacking-alfred-thm.html" target="_blank">Hacking Alfred - thm - Windows</a>
+        </div>
+    </section>
+    <section class="main-content">
+        <h2>System Information</h2>
+        <p>
+            When we land on a victim machine, it is important that we take the time to enumerate more about its system. We need this information to help us with other post exploitation activities such as privilege escalation. We will want to know the following:
+        </p>
+            <ul class="overview">
+                <li>System Information</li>
+                <ul>
+                    <li>Hostname</li>
+                    <li>OS Name (Windows 10, 11 etc)</li>
+                    <li>OS Build and Service Pack (Windows 7 SP1 7600)</li>
+                    <li>OS Architecture (x64 or x86)</li>
+                    <li>Installed Updates / Hotfixes</li>
+                </ul>
+            </ul>
+        <p>
+            This information will help us look for known vulnerabilities and exploits which can be used on the target system. The architecture will help us if we are developing a priv esc exploit (for compilation) purposes or we are crafting a meterpreter session. The security updates will let us know if it is worth our while working with an exploit or not - there is no use if the vulnerability has been patched!
+        </p>
+        <p>
+            If we have a meterpreter session on the victim machine, we can use <code>getuid</code> and <code>sysinfo</code> to find all of the above information except the installed updates and hotfixes.
+        </p>
+        <p>
+            We can gain the necessary information without meterpreter by using windows commands.
+        </p>
+        <p>
+            We can use <code>hostname</code> to find the hostname.
+        </p>
+        <p>
+            A great command is <code>systeminfo</code> as it will give us all the necessary information including the hotfixes and more. We can copy and search the hotfix id numbers so we can know what the hotfix was patching.
+        </p>
+        <p>
+            We can find out more about the hotfixes and save ourselves from having to search for every hotfix id by using <code>wmic qfe get Caption,Description,HotFixID,InstalledOn</code> We can now look for the Security Updates as these are the ones which we are interested in. We will also have links to further information about the updates so we will not have to search with a search engine.
+        </p>
+        <p>
+            On some versions of windows, we will be able to find a file called <code>eula.txt</code> which is found @ <code>C:\Windows\System32\eula.txt</code> This file will give us information about the OS version, service pack and build but it might not exist.
+        </p>
+        <h2>Users and Groups</h2>
+        <p>
+            We need to find out which user we have gained access to a target machine as along with the privileges which are associated with that user. We will also need to enumerate more about the other users on the machine along with the groups they belong to. This is important for the purposes of priv esc. We will want to know which users belong to groups which have elevated privileges such as members of the local administrators group.
+        </p>
+        <p>
+            We will want to find out the following:
+        </p>
+        <ul class="overview">
+            <li>Users and Groups</li>
+            <ul>
+                <li>Current user and privileges</li>
+                <li>Additional user info (password policy, age, expiry etc)</li>
+                <li>Other users on the system</li>
+                <li>Groups and group memberships - interesting groups which might have elevated privs</li>
+                <li>Members of the built-in administrator group</li>
+            </ul>
+        </ul>
+        <p>
+            Once we know which users belong to interesting groups we can target them for priv esc purposes.
+        </p>
+        <p>
+            From a meterpreter session, we can use <code>getuid</code> and <code>getprivs</code> or <code>run post/windows/gather/win_privs</code> to find out more about the current user and their privileges. We can also background the session and use <code>use post/windows/gather/enum_logged_on_users</code> to find out which other users are logged onto the target machine.
+        </p>
+        <p>
+            We can use windows commands to enumerate users and groups. The command <code>whoami</code> lets us know the username. We can also use <code>echo %USERNAME%</code> We can use <code>whoami /priv</code> to find out more about the privileges of the current user.
+        </p>
+        <p>
+            To find out more about other users on the compromised machine, we can use <code>query user</code> and <code>net users</code> and to find out more about a specific user we can use <code>net user messi</code> The <code>query user</code> command will show us users who are logged on - this is important because we might need to be more careful with what we do if we see an admin user logged on as they might detect unusual activity more easily.
+        </p>
+        <p>
+            To find out which local groups exist on the victim machine, we can use <code>net localgroup</code> We can look for interesting groups as groups can give their members elevated privileges. We can look for members of interesting groups using <code>net localgroup administrators</code> We can then potentially target members of these interesting groups for priv esc purposes.
+        </p>
+        <h2>Network Information</h2>
+        <p>
+            It is important to enumerate network information when we compromise a machine as this will help us potentially pivot to other hosts and networks. We are mostly interested in finding out about internal networks which the machine might be connected to along with firewalls as these determine what we can do when it comes to ports. We need to therefore find out about:
+            <ul class="overview">
+                <li>Network Information</li>
+                <ul>
+                    <li>Current IP address and network adaptor</li>
+                    <li>Internal networks</li>
+                    <li>TCP / UDP services which are running and their respective ports</li>
+                    <li>Other hosts on the networkd</li>
+                    <li>Routing table (ARP table, too)</li>
+                    <li>Windows Firewall state</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
+            We can use <code>ipconfig</code> and <code>ipconfig /all</code> to find out more about the network adaptors which the machine is using along with their respective network information such as IPv4 addresses and subnets. It also shows us the IP address of the default gateway which is responsible for routing the traffic on the subnet.
+        </p>
+        <p>
+            We can use <code>route print</code> to look at the routing table to see if there are any extra or interesting routes.
+        </p>
+        <p>
+            We can use <code>arp -a</code> to look at the arp table which will show us other devices which the compromised machine has been communicating with.
+        </p>
+        <p>
+            We can use <code>netstat -ano</code> to look at tcp and udp services along with their ports and states.
+        </p>
+        <p>
+            To see the state of the firewall we can use <code>netsh advfirewall show allprofiles</code> We can look at more specific rules - the help command will help us know what we can do: <code>netsh advfirewall firewall help</code>
+        </p>
+        <h2>Processes and Services</h2>
+        <p>
+                It is important to find out more about the processes (an instance of a running executable), services (a process which runs in the background and does not interact with the desktop (a daemon)) and scheduled tasks. We want to know more about these because they can potentailly help us elevate our privileges and allow us to migrate to a more stable or less suspicious process id.
+        </p>
+        <p>
+            We can use <code>ps</code> inside a meterpreter session to list the running processes. We can filter by architecture using <code>ps -A x64</code> We can filter for processes which are running under the NT AUTHORITY\SYSTEM privileges using <code>ps -s</code> We will only see these processes if we are operating within the security context of a privileged user. We can search for a specific pid for a known process using <code>pgrep explorer.exe</code>
+        </p>
+        <p>
+            The process id is important, along with the name of the process, its architecture and the security privileges it is running under.
+        </p>
+        <p>
+            We can migrate our meterpreter session to a different process using <code>migrate 832</code> explorer.exe is stable and a good choice to migrate to. If we migrate to a 64 bit process, our meterpreter session will operate as a 64 bit meterpreter session.
+        </p>
+        <p>
+            From a windows cmd shell we can use <code>net start</code> to see the running services. We can get more information about the running services by using <code>wmic service list brief</code>
+        </p>
+        <p>
+            We can find running processes along with the services which are running under them using <code>tasklist /SVC</code> This is an important command.
+        </p>
+        <p>
+            We can use <code>schtasks /query /fo LIST /v</code> to look at scheduled tasks. There will be a lot of information returned so it makes sense to copy and paste it into a .txt file.
+        </p>
+        <h2>Automating Windows Local Enumeration</h2>
+        <p>
+            It is useful to automate local enumeration as it saves us time and makes sure basic checks are performed. Automated enumeration scripts will also look for common priv esc opportunities. Time is important as it is limited for each penetration test, we it is best to speed up local enumeration of compromised machines using msf modules and / or scripts.
+        </p>
+        <h3>Meterpreter Modules</h3>
+        <p>
+            To find out more about our current user and their associated privileges, we can use: <code>run post/windows/gather/win_privs</code>
+        </p>
+        <p>
+            We can enumerate logged on and recently logged on users using: <code>run post/windows/gather/enum_logged_on_users</code>
+        </p>
+        <p>
+            We can check if the compromised system is running as a virtual machine by using: <code>run post/windows/gather/checkvm</code>
+        </p>
+        <p>
+            We can enumerate the installed applications which might be useful when we are looking for apps to target for priv esc opportunities using: <code>run post/windows/gather/enum_applications</code>
+        </p>
+        <p>
+            We can enumerate the other computers which are in the same domain as the compromised machine using: <code>run post/windows/gather/enum_computers</code> This could be useful when we are looking for machines to pivot to.
+        </p>
+        <p>
+            If we want to enumerate installed patches and hotfixes, we can use: <code>run post/windows/gather/enum_patches</code>
+        </p>
+        <p>
+            We can enumerate network shares which are available using: <code>run post/windows/gather/enum_shares</code>
+        </p>
+        <p>
+            We can arp scan a specified subnet using: <code>run post/windows/gather/arp_scanner RHOSTS=172.16.16.0/24</code>
+        </p>
+        <p>
+            We can list the active routing table using: <code>run autoroute -p</code> and we can set up a new route to a different subnet (for example an internal one which we have found the compromised machine is connected to) using: <code>run autoroute -s 172.16.6.0/24</code> The active routing table should then show that the new route has been created. We will then be able to use the compromised machine as a pivot to the newly discovered network.
+        </p>
+        <h3>J.A.W.S.</h3>
+        <p>
+            A good powershell script to use is Just Another Windows Enumeration Script. Since it is written using powershell, we do not have to worry about an .exe file not running.
+        </p>
+        <p>
+            First of all, we need to transfer the jaws.ps1 script onto the compromised machine. It makes sense to trasfer it to <code>C:\Temp</code>
+        </p>
+        <p>
+            We can then execute the jaws.ps1 script using: <code>powershell.exe -ExecutionPolicy Bypass -File .\jaws.ps1 -OutputFilename jaws.txt</code> This will save the results into a .txt file called jaws.txt
+        </p>
+        <p>
+            If the above command does not work, we can try: <code>powershell.exe -ExecutionPolicy Bypass .\jaws.ps1 -OutputFilename jaws.txt</code>
+        </p>
+        <h3>PrivescCheck</h3>
+        <p>
+            Another powershell script we can use is <code>PrivescCheck.ps1</code> Once we have transfered it to the victim machine, we can run it using: <code>powershell.exe -ep bypass -c ". .\PrivescCheck.ps1; InvokePrivescCheck -Report pec1"</code> This will run the checks and save the results into a file - in this case the output file is called pec1
+        </p>
+        <p>
+            We can get more information using the <code>-Extended</code> flag with the above command.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://diannaosec.blogspot.com" class="active" target="_blank">diannaosec</a>
+        </div>
+    </section>
+</body>
+</html>
