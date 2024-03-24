@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>finding website ownership and ip information</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>ownership</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">ownership</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Whois</h2>
+        <p>
+            Whois queries databases which contain information regarding who owns internet resources such as domain, ip addresses and ip address blocks. We can use it from the command line or via third party web-based tools.
+        </p>
+        <p>
+            Identifying basic information about domains is important as it is useful for the following tests which we perform. We can use whois to find out lots of useful information at the start of a web penetration test. We can feed it a domain name or an IP address.
+        </p>
+        <p>
+            A simple command to use form the command line is <code>sudo whois targetsite.com</code> We do not need to specify the protocol as we are looking just at the domain.
+        </p>
+        <p>
+            If we see that an asset is coming up to the end of its registry expiry date and nobody has renewed it, it might suggest to us that the asset is not considered very valuable to its owner.
+        </p>
+        <p>
+            We can find nameservers for the domain. Nameservers translate domain names into IP addresses - they are a key part of DNS. We might get information about proxy servers here since some providers such as cloudflare proxy web server IP addresses so if we use a tool such as host to try to find the IP address of a domain we will instead be given the IP address of the cloudflare proxy server. We can use IP addresses with whois like this: <code>sudo whois 104.21.44.108</code> This will let us know who owns the IP address and / or IP block which it belongs to. If the web server's IP address is being hidden by a proxy server, we will get information relating to the proxy server. It is useful to know IP ranges which belong to the target organisation since we can then test all of the other IP addresses in the block which they own.
+        </p>
+        <p>
+            We might find that the web server is not hiding behind a proxy server. We will get information about the target web server if this is the case. We can research the registrar and other information we find using whois.
+        </p>
+        <p>
+            We can use web services such as <code>https://whois.domaintools.com</code> to perform whois lookups. The results can be easier to read.
+        </p>
+        <h2>Netcraft</h2>
+        <p>
+            Netcraft can be used to fingerprint websites. It can be found @ <a class="main-links" href='https://www.netcraft.com' target="_blank">netcraft</a> There is a free tool on their website called <code>What's that site running?</code> Netcraft gives us a good high level overview of what we are up against when running web penetration tests. We therefore run it right at the start of our testing cycle along with whois.
+        </p>
+        <p>
+            Netcraft returns lots of useful information. We can get to know more about technologies being used by the website - this means we get a basic fingerprint of the website just by using netcraft. We can also find out more about cms solutions which might be running on the website from the tracking cookie information. Netcraft will also show us scripting frameworks such as javascript libraries which are being used.
+        </p>
+        <h2>Passive DNS Enumeration</h2>
+        <p>
+            Once we have gained a high level overview of the website using whois and netcraft, we can turn our attention to DNS enumeration. This allows us to build a more detailed map of the target site and its infrastructure.
+        </p>
+        <p>
+            We can use dnsrecon online or from the command line. A simple search can be started using: <code>sudo dnsrecon -d targetsite.com</code> The IP addresses returned are useful as they widen the attack surface.
+        </p>
+        <p>
+            Another good tool is online - it can be found @ <a href="https://dnsdumpster.com" class="main-links" target="_blank">dnsdumpster</a> This tool also lets us see visible hosts from an attacker's perspective. It shows us a map of what it discovers. We can export this map. We do not need to specify the protocol when we use dnsdumpster.
+        </p>
+        <p>
+            These passive techniques help us to start building our map of the target organistaion's web presence. We can deepen this using active methods which will be covered elsewhere.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

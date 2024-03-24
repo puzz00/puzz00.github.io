@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web enumeration introduction</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>intro</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">intro</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Web Enumeration and Information Gathering</h2>
+        <p>
+            This is the first step in a web app penetration test. We need to be thorough and methodical as we want to gather as much information about the target as possible. If we have a large attack surface, it is easier to successfuly compromise it. We need to let the client know about their entire web infrastructure, so we need to find it and know about it. There are two different kinds of information gathering - passive and active. Passive information gathering is when we are not actively engaging with the target, such as when we browse the public website and note down names of employees. Active information gathering is when we actively engage with the target, such as when we try zone transfers. We need to have authorisation before we begin active information gathering techniques.
+        </p>
+        <p>
+            During the information gathering phase of our penetration test, we need to record everything we discover so we can use it later on - there is no such thing as unncecessary information so we need to take notes and keep records of everything.
+        </p>
+        <p>
+            We are looking for lots of different sorts of information, such as:
+            <ul class="overview">
+                <li>Website and domain ownership</li>
+                <li>IP addresses, domains and subdomains - DNS enumeration</li>
+                <li>Hidden files and directories</li>
+                <li>Hosting infrastructure (web server, CMS, Databases etc)</li>
+                <li>Presence of defensive solutions such as web application firewalls</li>
+            </ul>
+        </p>
+        <p>
+            We can categorise the types of information we are looking for based on whether they can be found using passive or active methods:
+            <ul class="overview">
+                <li>Passive Techniques</li>
+                <ul>
+                    <li>Identifying domain names and domain ownership</li>
+                    <li>Discovering hidden and / or disallowed files and directories</li>
+                    <li>Identifying web server IP addresses and DNS records</li>
+                    <li>Identifying web technologies being used on target sites</li>
+                    <li>WAF detection</li>
+                    <li>Identifying subdomains</li>
+                    <li>Identifying website content structure</li>
+                </ul>
+                <li>Active Techniques</li>
+                <ul>
+                    <li>Downloading and analysing website and /or web app source code</li>
+                    <li>Port scanning and service discovery</li>
+                    <li>Web server fingerprinting</li>
+                    <li>Web app vulnerability scanning</li>
+                    <li>DNS zone transfers</li>
+                    <li>Subomain enumeration using brute-force techniques</li>
+                </ul>
+            </ul>
+        </p>
+        <p>
+            We have lots of tests and checks to perform. To make sure that we cover everything we need to, and therefore to work with a sound methodology, we can use the OWASP Web Security Testing Guide which can act as a check-list for this initial phase of our web penetration test.
+        </p>
+        <h2>OWASP Web Security Testing Guide</h2>
+        <p>
+            The OWASP Web Security Testing Guide allows us to have a sound and thorough methodology to test websites and web applications. It offers advice on how to test for common vulnerabilities along with ways to remediate them. A copy of this testing guide can be found <a class="main-links" href="./wstg-v4.2.pdf" target="_blank">here</a>
+        </p>
+        <p>
+            Another useful tool which helps us keep track of what we have tested along with any findings we have made is a spreadsheet which is based on the OWASP Web Security Testing Guide. It has CWE details and is a great way to ensure that we are performing thorough web tests. A copy of this spreadsheet can be found <a class="main-links" href="./OWASP_WSTG_Checklist.xlsx" target="_blank">here</a>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

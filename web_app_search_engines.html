@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web app info gathering search engines</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>dorks</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">search engines</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Google Dorks</h2>
+        <p>
+           We can use google search operators along with key words and in combination with other search operators to find out useful data about target websites, organisations, employees etc
+        </p>
+        <p>
+            A useful search operator is <code>site:elsfoo.com</code> as we can use it to find, amongst other things, subdomains of the target domain. We can do this more accurately using <code>site:*.elsfoo.com</code>
+        </p>
+        <p>
+            We can use the <code>inurl:admin</code> search operator to find interesting strings in urls.
+        </p>
+        <p>
+            We can use the <code>intitle:passwd</code> search operator to find interesting strings in webpage titles.
+        </p>
+        <p>
+            We can use the <code>filetype:csv</code> search operator to find files with specific file extensions.
+        </p>
+        <p>
+            The search operators can be used together to search in a more targeted way <code>site:*elsfoo.com inurl:admin</code>
+        </p>
+        <p>
+            A useful resource for google dorks can be found @ <a class="main-links" href="https://www.exploit-db.com/google-hacking-database" target="_blank">ghdb</a>
+        </p>
+        <h2>Wayback Machine</h2>
+        <p>
+            We can see how websites used to look by using the <a class="main-links" href="https://archive.org/web/" target="_blank">wayback machine</a>
+        </p>
+        <p>
+            It can be useful to look at historical versions of websites as we can gain a better understanding of the target and possibly find still useful data which is no longer available on the current version of a website.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            opportunities multiply as they are seized
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

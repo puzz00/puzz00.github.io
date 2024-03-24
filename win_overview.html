@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks windows overview</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>overview</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_vulns.html">win vulns</a></li>
+                <li><a class="active" href="#">overview</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Windows Vulnerabilities Overview</h2>
+        <p>
+            These vulnerabilities exist in windows itself rather than third party services. Windows has native services and protocols such as smb. Below are some of the native services which are commonly found (and exploited) on windows.
+        </p>
+        <h2>IIS</h2>
+        <p>
+            Microsoft Internet Information Services is a web server which is developed by microsoft and runs on ports 80 or 443.
+        </p>
+        <h2>WebDAV</h2>
+        <p>
+            This is an http extension which turns a web server into a file server so clients can interact with files on the web server - they can move, copy, edit and delete files on the webserver using webdav. This service works with iis and runs on the same ports as it. This service tends to serve files rather than web apps.
+        </p>
+        <h2>SMB</h2>
+        <p>
+            smb runs on port 445 on newer windows versions but it used to run on netbios using port 139. This service enables files and devices to be shared in a windows based environment.
+        </p>
+        <h2>RDP</h2>
+        <p>
+            This runs on port 3389 and lets people remotely interact with machines via a gui - it is disabled by default but can be enabled - valid credentials will be needed to access it.
+        </p>
+        <h2>WinRM</h2>
+        <p>
+            This is the Windows Remote Management Protocol and it lets people execute commands on a windows box remotely via the internet or an internal network. It runs on port 5986 by default or 443 if it has an ssl certificate.
+        </p>
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

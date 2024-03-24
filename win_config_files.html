@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks windows configuration files</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>win config files</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_creds.html">win creds</a></li>
+                <li><a class="active" href="#">config files</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Windows Credentials</h2>
+        <p>
+            Applications on Windows machines sometimes store credentials which can be used by attackers for privilege escalation. These credentials are sometimes stored as clear text. We can perform a simple search via powershell using <code>findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml</code>
+        </p>
+        <p>
+            Sensitive IIS information such as credentials may be stored in a web.config file. For the default IIS website, this could be located at <code>C:\inetpub\wwwroot\web.config</code> but there may be multiple versions of this file in different locations, which we can search for recursively.
+        </p>
+        <h2>Unattended Installation Files</h2>
+        <p>
+            Windows can automate repetitive tasks such as the mass installation of Windows onto machines. The tool which is used to do this is the Unattended Windows Setup utility. This utility can contain user credentials including the Administrator account password. System administrators need to manually remove the configuration file from each system once Windows has been installed. If this has not been done, an attacker might be able to find the file and loot credentials from it.
+        </p>
+        <p>
+            The Unattended Windows Setup utility will tend to utilise one of two configuration files which contain user credentials: <code>C:\Windows\Panther\Unattend.xml</code> or <code>C:\Windows\Panther\Autounattend.xml</code> These configuration files may well be under a sub directory call Unattend. We can search for it by navigating to <code>C:\</code> and then using <code>dir /s *Unattend.xml*</code>
+        </p>
+        <p>
+            If we find the .xml file we can look inside it and try to find the <code>?ltAutoLogon?gt</code> configuration. We will hopefully find the Administrator username along with its password. It may well be that the password has been encoded using base64 so we will probably need to decode it before we can try using it with other attacks against Windows such as psexec. If the <code>PlainText?gt</code> attribute is set to <code>false</code> then we know the password value is base64 encoded. We can decode it on a linux machine by copying the encoded value into a .txt file and then using <code>sudo base64 -d password.txt</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

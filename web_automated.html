@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>automated web enumeration and information gathering</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>automation</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">info gathering</a></li>
+                <li><a class="active" href="#">automated web enum</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Amass</h2>
+        <p>
+            We can use the OWASP tool called amass to automate website mapping along with enumeration and both passive and active information gathering. The basic usage of the tool needs us to specify a subcommand along with options for it. An example of using the enum subcommand is <code>sudo amass enum -d targetsite.com</code> We can specify passive only techniques with the -passive flag like so <code>sudo amass enum -passive -d targetsite.com</code>
+        </p>
+        <p>
+            We can save the results of our scans into a specified directory using the -dir flag. We can also see the sources for where amass found subdomains using the -src flag. We can also get the IP addresses of the subdomains using the -ip flag. These commands can be combined into one like so: <code>sudo amass enum -d targetsite.com -src -ip -dir ./amass_results</code> We can explicitly specify that we want amass to brute-force subdomains by adding the -brute flag to our command: <code>sudo amass enum -d targetsite.com -src -ip -brute -dir ./amass_results</code>
+        </p>
+        <p>
+            We can get amass to generate different types of report. One kind is d3 which will show us in an html file a graphic visualisation of what has been discovered. We need to use the viz subcommand like so: <code>sudo amass viz -dir ./amass_results -d3</code> The -dir flag in this case is used to specify the directory where the results are for the scan which we want to generate a report for. It makes sense, therefore, to always create a new directory for each new amass scan which we perform.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>
