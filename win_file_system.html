@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks windows file systems</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>file systems</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a class="active" href="#">file systems</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Alternate Data Streams</h2>
+        <p>
+            Any file created on a drive which has been formatted using NTFS will have two different streams.
+        </p>
+        <p>
+            One stream is the data stream - this is the default stream and contains the data of the file. An example would be the text in a txt file.
+        </p>
+        <p>
+            There is a second stream called the resource stream. This stream stores meta data about the file. This might be data such as when the file was created and who it was created by.
+        </p>
+        <h2>Abusing Data Streams</h2>
+        <p>
+            We can abuse this functionality by hiding malicious data in the resource stream of a legitimate file. This would hide the malicious data in a simple attempt to evade signature based anti-virus software.
+        </p>
+        <p>
+            A simple example to illustrate how this works is to use <code>notepad test.txt:secret.txt</code> which will let us create a new txt file. In this case, we are working in the resource data stream so we can add some secret text. When we open <code>notepad test.txt</code> we will see that it is empty as we are looking in the data stream. We can edit it as usual. If we want to access the secret text in the resource stream, we can use <code>notepad test.txt:secret.txt</code>
+        </p>
+        <p>
+            We can hide a malicious file or script inside a normal looking txt file using <code>type PowerView.ps1 > accounts.txt:pv.ps1</code> We can now add innocent data to <code>accounts.txt</code> if we want to and then transfer the file to a victim machine. We can now execute the malicious binary or script. In this case we would use <code>. .\accounts.txt:pv.ps1</code> from within a powershell session. For an executable binary, we could create a symbolic link using an elevate cmd prompt <code>mklink accounts.exe C:\Temp\accounts.txt:winpeas.exe</code> The symbolic link needs to be created in <code>C:\Windows\system32</code> and then we can just type <code>accounts</code> to execute the malicious binary.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>
