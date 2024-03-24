@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>google dorks</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>search engines</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">advanced web searches</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>Google Dorks</h2>
+        <p>
+            Google dorks are advanced web searches which use search operators. We can use them to enumerate lots of useful and specific information about target websites. This is a passive technique.
+        </p>
+        <p>
+            We can use <code>site:tesla.com</code> to limit the results to tesla.com and its subdomains. We can combine these advanced search terms with regular search terms like so: <code>employees site:tesla.com</code>
+        </p>
+        <p>
+            We could make the search more specific using <code>inurl:admin</code> These search terms can be combined like so: <code>site:tesla.com inurl:admin</code> Another search operator we can use which is similar to inurl is <code>intitle:admin</code>
+        </p>
+        <p>
+            We can use wildcards to look for specific resources such as subdomains: <code>site:*.ine.com</code>
+        </p>
+        <p>
+            We can limit results to pages which have specific types of file using <code>filetype:pdf</code>
+        </p>
+        <p>
+            We can search for directory listing using: <code>intitle:"index of"</code>
+        </p>
+        <p>
+            If we want to see what a website used to look like, we can use <code>cache:tesla.com</code> We can also have a look at the <a href="https://archive.org/web" class="main-links" target="_blank">wayback machine</a> which keeps copies of websites from different points in the past.
+        </p>
+        <p>
+            There is a very good resource to find useful advanced search terms @ <a href="https://www.exploit-db.com/google-hacking-database" class="main-links" target="_blank">exploit-db</a> We can search it for terms such as wp to help us tailor our attacks to infrastructure which the target organisation is using.
+        </p>
+        <p>
+            The following commands search for information leakage in the form of passwords: <code>inurl:auth_user_file.txt</code> or <code>inurl:passwd.txt</code> or <code>intitle:"index of" "credentials"</code> We can use <code>inurl:wp-config.bak</code> to search for information leakage in back up files of the wordpress configuration file.
+        </p>
+        <p>
+            We can use google dorks to really focus our attacks. Here is an example which searches for government websites which have exposed csv files via directory listing being enabled: <code>site:gov.* intitle:"index of" *.csv</code>
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

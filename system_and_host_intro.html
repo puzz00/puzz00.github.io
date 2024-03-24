@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks introduction</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>introduction</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a class="active" href="#">introduction</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <p>
+            We are not limited to attacking web applications and network services - we can attack hosts and systems. This is especailly the case once we have gained an initial foothold and we are attacking other devices on the compromised networks. These attacks often exploit misconfigurations and / or vulnerabilities in operating systems. They are useful for when we find machines on internal networks which are not running network services apart from default ones such as smb.
+        </p>
+        <p>
+            The following overview details what will be covered.
+        </p>
+        <ul class="overview">
+            <li>Exploiting Windows Vulnerabilities</li>
+            <ul>
+                <li>An Overview of Vulnerabilities in Windows</li>
+                <li>Exploiting IIS WebDAV</li>
+                <li>Exploiting SMB</li>
+                <li>Eternalblue</li>
+                <li>Exploiting RDP</li>
+                <li>Exploiting WinRM</li>
+            </ul>
+            <li>Windows Privilege Escalation</li>
+            <ul>
+                <li>Windows Kernel Exploits</li>
+                <li>Bypassing UAC</li>
+                <li>Access Token Impersonation</li>
+            </ul>
+            <li>Windows Credential Dumping</li>
+            <ul>
+                <li>Windows Password Hashes</li>
+                <li>Passwords in Configuration Files (Unattended Installation)</li>
+                <li>Dumping Hashes with Mimikatz</li>
+                <li>Pass-the-Hash Attacks</li>
+                <li>Cracking Windows Password Hashes</li>
+            </ul>
+            <li>Exploiting Linux Vulnerabilities</li>
+            <ul>
+                <li>An Overview of Vulnerabilities in Linux</li>
+                <li>Exploiting Bash (Shellshock)</li>
+                <li>Exploiting FTP</li>
+                <li>Exploiting SSH</li>
+                <li>Exploiting SAMBA</li>
+            </ul>
+            <li>Linux Privilege Escalation</li>
+            <ul>
+                <li>Linux Kernel Exploits</li>
+                <li>Exploiting Misconfigured Cronjobs</li>
+                <li>Exploiting SUID Binaries</li>
+            </ul>
+            <li>Linux Credential Dumping</li>
+            <ul>
+                <li>Dumping Linux Password Hashes</li>
+                <li>Linux Password Hunting</li>
+                <li>Cracking Linux Password Hashes</li>
+            </ul>
+        </ul>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>web server vulnerability scanning</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>dns</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./web_app_pen_testing.html">web app</a></li>
+                <li><a href="./web_app_info_gathering.html">information gathering</a></li>
+                <li><a class="active" href="#">dns enumeration</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>DNS Enumeration</h2>
+        <p>
+            This is an active method whereby we interact with the DNS nameserver for a domain. We want to retrieve IP addresses for different machines on the domain along with subdomain information and mail servers.
+        </p>
+        <p>
+            We can use <a class="main-links" href="https://dnsdumpster.com" target="_blank">dnsdumpster</a> to find out information about the dns servers for a given domain. This is a passive technique which gives similar information to <code>sudo dnsrecon -d victimsite.com</code>
+        </p>
+        <p>
+            The dnsenum tool performs active techniques as well as passive ones. We can use <code>sudo dnsenum victimsite.com</code> to get information about the specified domain. We can get similar information using <code>sudo fierce -dns victimsite.com</code>
+        </p>
+        <h2>Zone Transfers</h2>
+        <p>
+            Administrators sometimes want to transfer the dns records from one nameserver to another as a backup. This process is known as a zone transfer. If this has not been properly configured, we can also get a copy of the DNS records using a command such as: <code>sudo dig -t AXFR @ns1.victimsite.com victimsite.com +nocookie</code> The @ symbol lets us specify the nameserver which we want to use.
+        </p>
+        <p>
+            This provides useful information such as internal network addresses along with a good overview of the target organisation's network. We can find subdomains and internal subdomains as well.
+        </p>
+        <p>
+            We can enumerate the reverse dns zone with dig using this command: <code>sudo dig -t AXFR @10.10.10.8 -x 192.168</code> In this example we are assuming that the target organisation uses the ip address block 192.168.x.y so we specify that we want to check ip addresses in that block.
+        </p>
+        <h2>Further DNS Enumeration</h2>
+        <p>
+            We can use nmap to search for dns servers as port 53 on udp and sometimes tcp will be open on them: <code>sudo nmap -T4 -Pn -n -p53 --open -sUV --version-intensity 0 -oG udp_dns.gnmap 10.10.10.0/24</code> for udp and <code>sudo nmap -T4 -Pn -n -p53 --open -sS -oG tcp_dns.gnmap</code> We can combine the results of these scans using: <code>sudo grep "53/open/" *.gnmap | awk '{print $2}' | sort | uniq > dns_targets.txt</code>
+        </p>
+        <p>
+            If the above commands do not return any results, we can try them again but with the <code>--source-port=53</code> option set as sometimes dns servers will only accept incoming traffic from port 53.
+        </p>
+        <p>
+            Once we have found dns servers for a domain, we can enumerate them to find out more using dig. Here are some commands which are useful: <code>sudo dig @10.10.10.8 target.com ns +noall +answer +nocookie</code>
+        </p>
+        <p>
+            <code>sudo dig @10.10.10.8 target.com mx +noall +answer +nocookie</code>
+        </p>
+        <p>
+            We can use dig to enumerate further by using it on new subdomains or servers which we find: <code>sudo dig @10.10.10.8 mail.target.com +noall +answer +nocookie</code>
+        </p>
+        <p>
+            <code>sudo dig @10.10.10.8 ns1.target.com +noall +answer +nocookie</code>
+        </p>
+        <p>
+            We can bruteforce subdomains via dns using the host tool combined with a wordlist. Here is a bash script which does so:
+        </p>
+        <p>
+            <code>sudo for name in $(cat /usr/share/dnsrecon/subdomains-top1mil-20000.txt); do host $name.victimsite.com 10.10.10.8 -W 2; done | grep 'has address'</code>
+        </p>
+        <p>
+            We can enumerate dns using reverse lookups whereby we look for a ptr record which maps and ip address to a domain name. We can do this with <code>sudo dig @10.10.10.8 -x 10.10.10.158 +nocookie</code>
+        </p>
+        <p>
+            We can bruteforce the reverse dns zone using a bash script such as the one below:
+        </p>
+        <p>
+            <code>sudo for ip in $(cat targets.txt); do dig @10.10.10.8 -x $ip +nocookie; done | grep 'victimsite.com' | grep PTR</code>
+        </p>
+        <p>
+            We will need to generate a list of possible IP addresses for the above command to work - here we have saved them as targets.txt
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            if you know the enemy and know yourself, your victory will not stand in doubt
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>

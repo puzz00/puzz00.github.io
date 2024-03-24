@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./pts.css">
+    <title>system and host attacks exploiting rdp</title>
+</head>
+<body>
+    <header class="navbar">
+        <a href="https://github.com/puzz00" target="_blank"><img src="./images/chess_1.jpg" alt="black or white?"></a>
+        <h1>rdp</h1>
+        <nav class="links">
+            <ul>
+                <li><a href="./index.html">home</a></li>
+                <li><a href="./host_and_network_pen_testing.html">host and network</a></li>
+                <li><a href="./system_and_host_attacks.html">system and host attacks</a></li>
+                <li><a href="./win_vulns.html">win vulns</a></li>
+                <li><a class="active" href="#">rdp</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="main-content">
+        <h2>RDP</h2>
+        <p>
+            This runs on port 3389 and lets people remotely interact with machines via a gui - it is disabled by default but can be enabled - valid credentials will be needed to access it.
+        </p>
+        <h2>Enumeration</h2>
+        <p>
+            RDP is a gui which allows users to remotely access a windows machine. It runs by default on port 3389 but this is often changed by administrators so we need to check all ports and if we get odd results with services not recognised by nmap it is worth using the msfconsole rdp_scanner module to see if rdp is running over that specific port: <code>use auxiliary/scanner/rdp/rdp_scanner</code> (we will need to set the rhosts and rport)
+        </p>
+        <h2>Credentials</h2>
+        <p>
+            Once we have found rdp running, we can attempt to brute force valid credentials using hydra - it is important we slow the attack down as we could crash the remote machine - we can do this with -t 4 (the default is -t 16): <code>sudo hydra -L users.txt -P rockyou.txt rdp://10.2.2.8:3333 -t 4</code>
+        </p>
+        <h2>Exploitation</h2>
+        <p>
+            Once we have valid credentials, we can use a tool such as xfreerdp to attempt to rdp into the victim machine: <code>xfreerdp /u:administrator /p:"tinkerbell" /v:10.2.2.8:3333</code>
+        </p>
+        <h2>Conclusion</h2>
+        <p>
+            RDP can give us access to a gui on a remote machine and therefore enumerate it further or gain persistence. It is worthwhile looking for it on different ports as administrators may well set it up to run on these as oppossed to its default one of 3389.
+        </p>
+    </section>
+    <section class="extra-info">
+        <p class="tagline">
+            the enemy knows the system
+        </p>
+        <div class="contact">
+            <p>puzz00</p>
+            <a href="https://github.com/puzz00" class="active" target="_blank">knock knock</a>
+        </div>
+    </section>
+</body>
+</html>
