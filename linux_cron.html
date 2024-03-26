@@ -22,8 +22,8 @@
     </header>
     <section class="gallery">
         <div class="card">
-            <a href="https://diannaosec.blogspot.com/2023/11/hacking-cronos-htb.html"><img src="images/cronos.png" alt="hacking cronos on hack the box"></a>
-            <a href="https://diannaosec.blogspot.com/2023/11/hacking-cronos-htb.html">Hacking CronOS - htb - Linux</a>
+            <a href="https://github.com/puzz00/cronos-htb" target="_blank" alt="hacking cronos on hack the box"><img src="./images/cronos.png" alt=""></a>
+            <a href="https://github.com/puzz00/cronos-htb" target="_blank">Hacking CronOS - htb - Linux</a>
         </div>
     </section>
     <section class="main-content">
@@ -35,26 +35,35 @@
             Cron can run applications, scripts and other commands. These cron jobs can be configured to run on varying time schedules using the cron utility.
         </p>
         <p>
-            There is a file called crontab - this is a configuration file which is used by the cron utility to store and track the established cron jobs. We can access this in various ways. We will see the cronjobs which have been set up as the user we currently have access to the victim machine as.
+            We can create <i>user specific</i> cron jobs or <i>system wide</i> cron jobs. When we land on a target machine as a low-level user, we will want to know more about the cron jobs which are scheduled to run (if there are any). We will not be able to see the files which contain the user specific cron jobs because they are only accessible to the root user. These files are kept in /var/spool/cron/crontabs and /var/cron/tabs
+        </p>
+        <p>
+            There is also a file called crontab which can be found @ /etc/crontab - this is a configuration file which is used by the cron utility to store and track the established <i>system wide</i> cron jobs. We can access this in various ways. We will see the cron jobs which have been established as system wide.
         </p>
         <h2>Enumerating Cron Jobs</h2>
         <p>
-            As mentioned above, there are different ways we can search for cron jobs. We will be able to see the cron jobs which are set up for the current user which we have access to the compromised machine as using: <code>cat /etc/crontab</code> We can also try: <code>ls -al /etc/cron*</code> We can also check <code>systemctl list-timers -all</code>
+            As mentioned above, there are different ways we can search for cron jobs. We will be able to see the cron jobs which are set up <i>system wide</i> using <code>cat /etc/crontab</code> We can also try: <code>ls -al /etc/cron*</code> We can also check <code>systemctl list-timers -all</code>
         </p>
         <p>
-            A problem here is that we will only see the cronjobs which have been set up as the current user, but for privilege escalation purposes we really want to know about cronjobs which have been scheduled to run as the root user!
+            We will be able to see any cronjobs which have been created as the user we have compromised the machine as by looking at the crontab editor for their <i>user specific</i> cron jobs using <code>crontab -e</code>
         </p>
         <p>
-            We can utilise the <a class="main-links" href="https://github.com/DominicBreuker/pspy" target="_blank">pspy</a> tool to look for all cronjobs - we can download the correct version based on the compromised machine's architecture and then transfer it to the victim machine. The small versions can be tried if the static versions are too large - they are indicated with an s at the end of their name such as <code>pspy64s</code> They might not work so it is best to try the static versions first. We will need to add executable permissions to the binary using <code>chmod +x pspy64</code> before executing it with <code>./pspy64</code> The htb box called cronos which is linked to at the start of this page shows this tool in operation. We could also use an automated linux enumeration script such as <code>linenum.sh</code> or <code>linpeas.sh</code> as these will also enumerate cronjobs.
+            A problem here is that we will only see the cronjobs which have been set up <i>system wide</i> for any users or ones which have been created specifically for the user we have compromised the machine as. For privilege escalation purposes we really want to know about cron jobs which have been scheduled to run as the root user. The root user may well have created system wide cron jobs to run as root, but they can also create <i>user specific</i> cronjobs and if they have done so we will not be able to see the configuration file which contains them as a low-level user. We will also not be able to see <i>user specific</i> cronjobs which have been set up as other users on the system.
+        </p>
+        <p>
+            To solve this problem, we can utilise the <a class="main-links" href="https://github.com/DominicBreuker/pspy" target="_blank">pspy</a> tool to look for all cronjobs - we can download the correct version based on the compromised machine's architecture and then transfer it to the victim machine. The small versions can be tried if the static versions are too large - they are indicated with an s at the end of their name such as <code>pspy64s</code> They might not work so it is best to try the static versions first. We will need to add executable permissions to the binary using <code>chmod +x pspy64</code> before executing it with <code>./pspy64</code> The htb box called cronos which is linked to at the start of this page shows this tool in operation. We could also use an automated linux enumeration script such as <code>linenum.sh</code> or <code>linpeas.sh</code> as these will also enumerate cronjobs.
         </p>
         <p>
             We can add some arguments to the <code>pspy64</code> command such as the <code>-pf</code> flag which prints commands and file system events along with <code>-i 1000</code> which specifies checks to be made every one second.
         </p>
         <p>
+            Once pspy64 is up and running, we just need to watch the processes and keep an eye out for any tasks which appear to be scheduled to run using cron.
+        </p>
+        <p>
             As well as looking at running processes, we can enumerate the compromised machine to look for unusual scripts or files which might be executed as cronjobs. We will look for tar archives, too, as these might be using a cronjob along with a * which can be exploited to elevate our privileges. We can unzip and unarchive tar.gz files using: <code>tar -zxvf monitor.tar.gz</code>
         </p>
         <p>
-            It is worthwhile looking for files which we can write to using <code>find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null</code>
+            It is worthwhile looking for files which we can write to using <code>find / -path /proc -prune -o -type f -perm -o+w 2>/dev/null</code> since if one of these files has been incorrectly set up to run as a cron job under the privileges of the root user we can either overwrite the original file with malicious code or append malicious code to it.
         </p>
         <h2>Cron File Overwrites</h2>
         <p>
@@ -91,6 +100,10 @@
         <h2>Cron Path Hijacking</h2>
         <p>
             When we look at the crontab using <code>cat /etc/crontab</code> we will see the PATH variable which cron uses to look for binaries in cronjobs. If we see a cronjob which does not have an absolute path specified, we can have a look for it in the first part of the PATH variable. If it is not there, and we can write to that directory, we can hijack the PATH by creating a malicious shell script in that directory with the same name as the binary being executed by the cronjob. If need be - for example we do not have write permisssions on the first directory - we can check the next directory in the same way.
+        </p>
+        <h2>Extra Info</h2>
+        <p>
+            For extra info regarding how scheduled tasks work on linux operating systems, please take a look at <a class="main-links" href="https://github.com/zigzaga00/linux-notes/blob/main/linux-notes.md#automating-and-scheduling-tasks-using-cron-jobs" target="_blank">cron jobs explained</a>
         </p>
     </section>
     <section class="extra-info">
